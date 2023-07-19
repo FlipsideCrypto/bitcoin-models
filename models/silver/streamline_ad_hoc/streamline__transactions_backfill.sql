@@ -5,7 +5,7 @@
         target = "{{this.schema}}.{{this.identifier}}"
     )
 ) }}
-
+-- todo parameterize with cli input
 WITH blocks AS (
 
     SELECT
@@ -17,13 +17,27 @@ WITH blocks AS (
             798921
         ) AS blist
 ),
-tbl AS (
+block_list AS (
     SELECT
         VALUE AS block_number
     FROM
         blocks,
         LATERAL FLATTEN(
             input => blist
+        )
+),
+tbl AS (
+    SELECT
+        block_number,
+        DATA :result :: STRING AS block_hash
+    FROM
+        {{ ref("bronze__streamline_blocks_hash") }}
+    WHERE
+        block_number IN (
+            SELECT
+                block_number
+            FROM
+                block_list
         )
 )
 SELECT
