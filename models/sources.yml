@@ -8,6 +8,12 @@ sources:
       - name: dim_date_hours
       - name: address_tags
       - name: dim_dates
+  - name: crosschain_silver
+    database: "{{ 'crosschain' if target.database == 'BITCOIN' else 'crosschain_dev' }}"
+    schema: silver
+    tables:
+      - name: hourly_prices_coin_market_cap
+      - name: hourly_prices_coin_gecko
   - name: bronze_streamline
     database: streamline
     schema: |
