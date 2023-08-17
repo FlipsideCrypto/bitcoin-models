@@ -23,29 +23,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
         FROM
             {{ ref("bronze__streamline_blocks_hash") }}
         WHERE
-            (
-                block_number >= (
-                    SELECT
-                        block_number
-                    FROM
-                        last_3_days
-                )
-            )
-            AND block_number IS NOT NULL
-            AND block_number NOT IN (
-                SELECT
-                    block_number
-                FROM
-                    {{ ref("streamline__complete_transactions") }}
-                WHERE
-                    block_number >= (
-                        SELECT
-                            block_number
-                        FROM
-                            last_3_days
-                    )
-                    AND block_number IS NOT NULL
-            )
+            block_number in (803390, 803391)
     )
 SELECT
     block_number,
