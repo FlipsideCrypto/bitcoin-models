@@ -16,12 +16,8 @@ WITH transactions AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+_partition_by_block_id >= 803000
+
 {% endif %}
 ),
 inputs AS (
@@ -32,12 +28,8 @@ inputs AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+_partition_by_block_id >= 803000
+
 {% endif %}
 ),
 outputs AS (
@@ -48,12 +40,8 @@ outputs AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+_partition_by_block_id >= 803000
+
 {% endif %}
 ),
 input_val AS (

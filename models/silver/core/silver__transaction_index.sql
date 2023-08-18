@@ -15,12 +15,7 @@ WITH blocks AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+_partition_by_block_id >= 803000
 {% endif %}
 ),
 FINAL AS (

@@ -22,6 +22,8 @@ WHERE
         FROM
             {{ this }}
     )
+    OR block_number in (803390, 803391)
+
 {% endif %}
 ),
 transactions AS (
@@ -38,6 +40,8 @@ WHERE
         FROM
             blocks
     )
+    OR block_number in (803390, 803391)
+
 {% endif %}
 ),
 tx_value AS (
