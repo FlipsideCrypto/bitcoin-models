@@ -13,7 +13,7 @@ WITH blocks AS (
     WHERE
         _inserted_timestamp >= DATEADD(
             'day',
-            -3,
+            -10,
             CURRENT_DATE
         )
 ),
@@ -28,7 +28,7 @@ transactions AS (
     WHERE
         _inserted_timestamp >= DATEADD(
             'day',
-            -3,
+            -10,
             CURRENT_DATE
         )
     GROUP BY
