@@ -1,11 +1,13 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ['block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'tx_id',
-    cluster_by = ["_inserted_timestamp::DATE", "block_number"],
+    cluster_by = ["_inserted_timestamp::DATE", "_partition_by_block_id"],
     tags = ["core", "scheduled_core"]
 ) }}
+{# 
+    incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
+ #}
 -- depends_on: {{ ref('silver__blocks') }}
 WITH finalized_blocks AS (
 
@@ -32,7 +34,13 @@ WHERE
 ),
 bronze_transactions AS (
     SELECT
-        *
+        tx_id,
+        VALUE :metadata :request :params [0] :: STRING AS block_hash,
+        VALUE,
+        DATA,
+        id,
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         {{ ref('bronze__transactions') }}
 
@@ -53,27 +61,26 @@ FINAL AS (
         b.block_timestamp,
         b.tx_id,
         b.index,
-        DATA: vin [0]: coinbase IS NOT NULL AS is_coinbase,
-        DATA: vin [0]: coinbase :: STRING AS coinbase,
-        DATA :hash :: STRING AS tx_hash,
-        DATA :hex :: STRING AS hex,
-        DATA :locktime :: STRING AS lock_time,
-        DATA :size :: NUMBER AS SIZE,
-        DATA :version :: NUMBER AS version,
-        DATA :vin :: ARRAY AS inputs,
+        t.data: vin [0]: coinbase IS NOT NULL AS is_coinbase,
+        t.data: vin [0]: coinbase :: STRING AS coinbase,
+        t.data :hash :: STRING AS tx_hash,
+        t.data :hex :: STRING AS hex,
+        t.data :locktime :: STRING AS lock_time,
+        t.data :size :: NUMBER AS SIZE,
+        t.data :version :: NUMBER AS version,
+        t.data :vin :: ARRAY AS inputs,
         ARRAY_SIZE(inputs) AS input_count,
-        DATA :vout :: ARRAY AS outputs,
+        t.data :vout :: ARRAY AS outputs,
         {{ target.database }}.silver.udf_sum_vout_values(outputs) AS output_value,
         ARRAY_SIZE(outputs) AS output_count,
-        DATA :vsize :: STRING AS virtual_size,
-        DATA :weight :: STRING AS weight,
-        DATA: fee :: FLOAT AS fee,
-        t.value :metadata :request :params [0] :: STRING AS _request_block_hash,
+        t.data :vsize :: STRING AS virtual_size,
+        t.data :weight :: STRING AS weight,
+        t.data: fee :: FLOAT AS fee,
         t._partition_by_block_id,
         t._inserted_timestamp
     FROM
         finalized_blocks b
-        LEFT JOIN transactions t USING (
+        LEFT JOIN bronze_transactions t USING (
             block_hash,
             tx_id
         )
