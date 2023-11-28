@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'tx_id',
-    incremental_strategy = 'delete+insert',
+    incremental_strategy = 'merge',
     cluster_by = ["_partition_by_block_id", "tx_id"],
     tags = ["core", "scheduled_core"]
 ) }}
@@ -12,15 +12,16 @@ WITH blocks AS (
         *
     FROM
         {{ ref('silver__blocks') }}
+    WHERE
+        NOT is_pending
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp) _inserted_timestamp
+    FROM
+        {{ this }}
+)
 {% endif %}
 ),
 FINAL AS (
