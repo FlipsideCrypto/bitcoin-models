@@ -21,6 +21,7 @@ WHERE
         FROM
             {{ this }}
     )
+    or block_number = 818038
 {% endif %}
 ),
 FINAL AS (
