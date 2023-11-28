@@ -24,15 +24,6 @@ WITH silver_blocks AS (
       ORDER BY
         block_number ASC
     ) AS prior_hash_actual,
-    IFF(
-      likely_block_fork,
-      livequery.live.udf_api(
-        'POST',
-        'https://docs-demo.btc.quiknode.pro/',{},{ 'method': 'getblockhash',
-        'params': [block_number - 1] }
-      ) :data :result :: STRING,
-      NULL
-    ) AS confirmed_block_hash,
     _partition_by_block_id,
     SYSDATE() AS _test_timestamp
   FROM
