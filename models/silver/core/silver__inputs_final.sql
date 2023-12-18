@@ -24,6 +24,15 @@ WHERE
         FROM
             {{ this }}
     )
+    OR block_number IN (
+        SELECT
+            DISTINCT block_number
+        FROM
+            {{ this }}
+        WHERE
+            is_pending
+            AND _inserted_timestamp >= SYSDATE() - INTERVAL '1 day'
+    )
 {% endif %}
 ),
 outputs AS (
@@ -54,6 +63,7 @@ FINAL AS (
         o.pubkey_script_type,
         o.pubkey_script_desc,
         o.value,
+        o.block_number IS NULL AS is_pending,
         i.tx_in_witness,
         i._inserted_timestamp,
         i._partition_by_block_id,
