@@ -1,13 +1,12 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
+    incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'tx_id',
     cluster_by = ["_inserted_timestamp::DATE", "_partition_by_block_id"],
     tags = ["core", "scheduled_core"]
 ) }}
-{# 
-    incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
- #}
+
 -- depends_on: {{ ref('silver__blocks') }}
 WITH finalized_blocks AS (
 
@@ -29,6 +28,15 @@ WHERE
             MAX(_inserted_timestamp)
         FROM
             {{ this }}
+    )
+    OR block_number IN (
+        SELECT
+            DISTINCT block_number
+        FROM
+            {{ this }}
+        WHERE
+            is_pending
+            AND _inserted_timestamp >= SYSDATE() - INTERVAL '1 day'
     )
 {% endif %}
 ),
@@ -76,8 +84,12 @@ FINAL AS (
         t.data :vsize :: STRING AS virtual_size,
         t.data :weight :: STRING AS weight,
         t.data: fee :: FLOAT AS fee,
-        t._partition_by_block_id,
-        t._inserted_timestamp
+        t.block_hash IS NULL AS is_pending,
+        b._partition_by_block_id,
+        COALESCE(
+            t._inserted_timestamp,
+            b._inserted_timestamp
+        ) AS _inserted_timestamp
     FROM
         finalized_blocks b
         LEFT JOIN bronze_transactions t USING (
