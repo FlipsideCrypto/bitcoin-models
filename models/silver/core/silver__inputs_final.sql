@@ -24,7 +24,7 @@ WHERE
         FROM
             {{ this }}
     )
-    OR block_number IN (
+    {# OR block_number IN (
         SELECT
             DISTINCT block_number
         FROM
@@ -32,7 +32,7 @@ WHERE
         WHERE
             is_pending
             AND _inserted_timestamp >= SYSDATE() - INTERVAL '1 day'
-    )
+    ) #}
 {% endif %}
 ),
 outputs AS (

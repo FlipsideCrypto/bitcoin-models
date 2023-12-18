@@ -1,7 +1,6 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',
-    incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'tx_id',
     cluster_by = ["_inserted_timestamp::DATE", "_partition_by_block_id"],
     tags = ["core", "scheduled_core"]
@@ -29,7 +28,7 @@ WHERE
         FROM
             {{ this }}
     )
-    OR block_number IN (
+    {# OR block_number IN (
         SELECT
             DISTINCT block_number
         FROM
@@ -37,7 +36,7 @@ WHERE
         WHERE
             is_pending
             AND _inserted_timestamp >= SYSDATE() - INTERVAL '1 day'
-    )
+    ) #}
 {% endif %}
 ),
 bronze_transactions AS (
