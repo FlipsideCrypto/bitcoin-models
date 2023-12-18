@@ -2,6 +2,7 @@
     materialized = 'incremental',
     unique_key = 'tx_id',
     incremental_strategy = 'merge',
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = ["_partition_by_block_id", "tx_id"],
     tags = ["core", "scheduled_core"]
 ) }}
@@ -38,6 +39,12 @@ FINAL AS (
         LATERAL FLATTEN(tx)
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_id']
+    ) }} AS transaction_index_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL
