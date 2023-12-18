@@ -65,7 +65,10 @@ FINAL AS (
         o.value,
         o.block_number IS NULL AS is_pending,
         i.tx_in_witness,
-        i._inserted_timestamp,
+        COALESCE(
+            o._inserted_timestamp,
+            i._inserted_timestamp
+        ) AS _inserted_timestamp,
         i._partition_by_block_id,
         i.input_id
     FROM
