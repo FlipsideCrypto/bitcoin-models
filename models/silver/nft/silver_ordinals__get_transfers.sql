@@ -61,7 +61,7 @@ requests AS (
         block_number,
         block_hash,
         offset,
-        {{ target.database }}.streamline.get_inscription_transfers_by_block(
+        {{ target.database }}.streamline.udf_GET_TRANSFERS_BY_BLOCK_PY(
             block_hash,
             offset
         ) AS response
