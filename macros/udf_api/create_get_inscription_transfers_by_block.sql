@@ -43,7 +43,7 @@ $$;
 
 {% macro create_get_inscription_transfers_by_block_py() %}
 {% set query %}
-CREATE OR REPLACE PROCEDURE {{ target.database }}.STREAMLINE.GET_TRANSFERS_BY_BLOCK_PY(BLOCK_IDENTIFIER VARCHAR, OFFSET INTEGER)
+CREATE OR REPLACE PROCEDURE {{ target.database }}.STREAMLINE.GET_INSCRIPTION_TRANSFERS_BY_BLOCK(BLOCK_IDENTIFIER VARCHAR, OFFSET INTEGER)
 returns variant
 language python
 runtime_version=3.11
