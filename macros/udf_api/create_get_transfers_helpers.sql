@@ -1,7 +1,8 @@
-{% macro create_get_inscription_transfers_by_block() %}
+{% macro create_udf_get_inscription_transfers_by_block() %}
+{# Sends a single call to GET /ordinals/v1/inscriptions/transfers. BLOCK_IDENTIFIER is either height or hash.  #}
 {% set livequery %}
 CREATE 
-OR REPLACE FUNCTION {{ target.database }}.STREAMLINE.GET_INSCRIPTION_TRANSFERS_BY_BLOCK(BLOCK_IDENTIFIER VARCHAR, OFFSET INTEGER)
+OR REPLACE FUNCTION {{ target.database }}.STREAMLINE.UDF_GET_INSCRIPTION_TRANSFERS_BY_BLOCK(BLOCK_IDENTIFIER VARCHAR, OFFSET INTEGER)
 RETURNS VARIANT
 AS
 $$
@@ -22,10 +23,12 @@ $$;
 {% endmacro %}
 
 
-{% macro create_generate_offset_array() %}
+{% macro create_udf_generate_offset_array() %}
+{# Helper function for creating input data in Ordinals Transfers calls. 
+Takes total call input and generates array of offsets with max page of 60 responses #}
 {% set query %}
 CREATE 
-OR REPLACE FUNCTION {{ target.database }}.STREAMLINE.GENERATE_OFFSET_ARRAY(CALLS_REQUIRED INTEGER)
+OR REPLACE FUNCTION {{ target.database }}.STREAMLINE.UDF_GENERATE_OFFSET_ARRAY(CALLS_REQUIRED INTEGER)
 RETURNS ARRAY
 LANGUAGE PYTHON
 RUNTIME_VERSION = '3.9'
@@ -41,9 +44,10 @@ $$;
 {% endmacro %}
 
 
-{% macro create_get_inscription_transfers_by_block_py() %}
+{% macro create_sp_get_inscription_transfers_by_block() %}
+{# Procedure that calls UDF_GET_INSCRIPTION_TRANSFERS_BY_BLOCK, checks status_code and returns a valid response. #}
 {% set query %}
-CREATE OR REPLACE PROCEDURE {{ target.database }}.STREAMLINE.GET_INSCRIPTION_TRANSFERS_BY_BLOCK(BLOCK_IDENTIFIER VARCHAR, OFFSET INTEGER)
+CREATE OR REPLACE PROCEDURE {{ target.database }}.STREAMLINE.SP_GET_INSCRIPTION_TRANSFERS_BY_BLOCK(BLOCK_IDENTIFIER VARCHAR, OFFSET INTEGER)
 returns variant
 language python
 runtime_version=3.11
@@ -61,12 +65,14 @@ def main(session: snowpark.Session, block_identifier: str, offset: int):
     while attempts < max_attempts:
         query = f"""
             SELECT
-                BITCOIN_DEV.STREAMLINE.GET_INSCRIPTION_TRANSFERS_BY_BLOCK({block_identifier}, {offset}) as response
+                {{ target.database }}.STREAMLINE.GET_INSCRIPTION_TRANSFERS_BY_BLOCK({block_identifier}, {offset}) as response
     
         """
     
         response_df = session.sql(query)
         res = json.loads(response_df.collect()[0][0])
+        
+        attempts += 1
         
         if res['status_code'] == 200:
             return res
@@ -74,7 +80,10 @@ def main(session: snowpark.Session, block_identifier: str, offset: int):
             retry_after = int(res['headers']['Retry-After'])
             print(f"Rate limit hit, sleeping for {retry_after}s")
             time.sleep(retry_after)
-            attempts += 1
+        elif attempts == max_attempts:
+            # If max attempts is reached, log response and move on
+            return res
+
 $$;
 {% endset %}
 {% do run_query(query) %}

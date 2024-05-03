@@ -33,7 +33,7 @@ input_spine AS (
     FROM
         blocks,
         LATERAL FLATTEN(
-            {{ target.database }}.streamline.generate_offset_array(CEIL(transfer_count / 60))
+            {{ target.database }}.streamline.udf_generate_offset_array(CEIL(transfer_count / 60))
         )
 ),
 request_ids AS (
@@ -61,7 +61,7 @@ requests AS (
         block_number,
         block_hash,
         offset,
-        {{ target.database }}.streamline.udf_GET_TRANSFERS_BY_BLOCK_PY(
+        {{ target.database }}.streamline.UDF_GET_INSCRIPTION_TRANSFERS_BY_BLOCK(
             block_hash,
             offset
         ) AS response
