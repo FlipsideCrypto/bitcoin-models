@@ -7,39 +7,56 @@
     tags = ["hiro_api"]
 ) }}
 {# todo - create block partition for cluster? #}
-WITH {% if var(
-        'BACKFILL_ORDINALS_TRANSFERS',
-        False
-    ) %}
-    backfill AS (
+WITH bronze_data AS (
 
-        SELECT
-            block_number,
-            NULL AS block_hash,
-            offset,
-            response,
-            request_timestamp AS _inserted_timestamp
-        FROM
-            {{ source(
-                'bronze_api',
-                'get_transfers_response_backfill'
-            ) }}
-    ),
-{% endif %}
-
-bronze_data AS (
     SELECT
         block_number,
         block_hash,
         offset,
-        response,
-        _inserted_timestamp
+        response :data :: variant AS response,
+        ARRAY_SIZE(
+            response :data :results :: ARRAY
+        ) AS result_count,
+        response :status_code AS status_code,
+        _inserted_timestamp,
+        'livequery' AS source
     FROM
         {{ source(
             'bronze_api',
             'get_transfers_response'
         ) }}
-),
+
+{% if is_incremental() %}
+WHERE
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% endif %}
+
+{% if var(
+        'BACKFILL_ORDINALS_TRANSFERS',
+        False
+    ) %}
+UNION ALL
+SELECT
+    block_number,
+    NULL AS block_hash,
+    offset,
+    response,
+    result_count,
+    status_code,
+    request_timestamp AS _inserted_timestamp,
+    'backfill' AS source
+FROM
+    {{ source(
+        'bronze_api',
+        'get_transfers_response_backfill'
+    ) }}
+{% endif %}
+)
 SELECT
     concat_ws(
         '-',
@@ -48,12 +65,11 @@ SELECT
     ) AS request_id,
     block_number,
     block_hash,
+    source,
     offset,
-    ARRAY_SIZE(
-        response :data :results :: ARRAY
-    ) AS result_count,
+    result_count,
     response,
-    response :status_code AS status_code,
+    status_code,
     _inserted_timestamp,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,

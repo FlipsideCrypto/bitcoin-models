@@ -24,8 +24,6 @@ WITH blocks AS (
 WHERE
     _inserted_timestamp >= SYSDATE() - INTERVAL '1 DAY'
 {% endif %}
-LIMIT
-    50
 ), 
 input_spine AS (
     SELECT

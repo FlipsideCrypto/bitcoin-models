@@ -99,7 +99,6 @@ CREATE TABLE IF NOT EXISTS {{ target.database }}.BRONZE_API.GET_TRANSFERS_RESPON
     block_hash STRING,
     offset INT,
     response VARIANT,
-    status_code INT,
     _inserted_timestamp TIMESTAMP_NTZ
 );
 {% endset %}
@@ -131,21 +130,21 @@ BEGIN
             block_hash varchar,
             offset integer,
             response variant,
-            request_timestamp timestamp_ntz
+            _inserted_timestamp timestamp_ntz
         ) as 
         select
             :block_number as block_number,
             :block_hash as block_hash,
             :offset as offset,
             :sp_res as response,
-            sysdate() as request_timestamp;
+            sysdate() as _inserted_timestamp;
         
         INSERT INTO bitcoin_dev.BRONZE_API.GET_TRANSFERS_RESPONSE(
                 block_number,
                 block_hash,
                 offset,
                 response,
-                request_timestamp
+                _inserted_timestamp
             ) select * from res_int;
 
             counter := counter + 1;
