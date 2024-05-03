@@ -20,10 +20,9 @@ WITH blocks AS (
 {% if is_incremental() %}
 WHERE
     _inserted_timestamp >= SYSDATE() - INTERVAL '1 DAY'
-{% else %}
+{% endif %}
 LIMIT
     50
-{% endif %}
 ), 
 input_spine AS (
     SELECT
@@ -61,12 +60,13 @@ requests AS (
         block_number,
         block_hash,
         offset,
-        {{ target.database }}.streamline.UDF_GET_INSCRIPTION_TRANSFERS_BY_BLOCK(
+        {{ target.database }}.streamline.udf_get_inscription_transfers_by_block(
             block_hash,
             offset
         ) AS response
     FROM
         request_ids
+LIMIT 500
 )
 SELECT
     concat_ws(
