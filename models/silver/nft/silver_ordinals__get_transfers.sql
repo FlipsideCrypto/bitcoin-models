@@ -4,9 +4,12 @@
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'get_transfers_id',
     cluster_by = ["block_number"],
-    tags = ["hiro_api"]
+    tags = ["hiro_api"],
+    enabled = False
 ) }}
-{# todo - create block partition for cluster? #}
+{# If can call a SPROC from a UDF, then this model is cleaner. 
+Otherwise, use SP_GET_INSCRIPTION_TRANSFERS to request and build in BRONZE_API schema #}
+
 WITH blocks AS (
 
     SELECT

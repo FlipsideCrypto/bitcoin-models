@@ -46,3 +46,9 @@ sources:
     schema: github_actions
     tables:
       - name: workflows
+  - name: bronze_api
+    database: "{{ 'BITCOIN' if target.profile == 'prod' else 'BITCOIN_DEV' }}"
+    schema: bronze_api
+    tables:
+      - name: get_transfers_response
+      - name: get_transfers_response_backfill
