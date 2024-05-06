@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'get_transfers_id',
+    unique_key = 'inscription_transfers_id',
     cluster_by = ["_partition_by_block_number"],
     tags = ["hiro_api"]
 ) }}
@@ -21,7 +21,7 @@ WITH bronze_data AS (
         _inserted_timestamp,
         'streamline' AS source
     FROM
-    {# Ref to view on external table with Streamline responses #}
+        {# Ref to view on external table with Streamline responses #}
         {{ source(
             'bronze_api',
             'get_transfers_response'
@@ -57,7 +57,24 @@ FROM
         'get_transfers_response_backfill'
     ) }}
 {% endif %}
-)
+),
+flatten_response AS (
+    SELECT
+        block_number,
+        block_hash,
+        offset,
+        source,
+        VALUE :id :: STRING AS id,
+        VALUE :number :: INT AS ordinal_number,
+        VALUE :from :: variant AS transfer_from_data,
+        VALUE :to :: variant AS transfer_to_data,
+        _inserted_timestamp
+    FROM
+        bronze_data,
+        LATERAL FLATTEN(
+            response :results :: ARRAY
+        )
+),
 SELECT
     concat_ws(
         '-',
@@ -68,9 +85,6 @@ SELECT
     block_hash,
     source,
     offset,
-    result_count,
-    response,
-    status_code,
     _inserted_timestamp,
     ROUND(
         block_number,
@@ -79,8 +93,8 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-        ['block_number', 'offset']
-    ) }} AS get_transfers_id,
+        ['block_number', 'id']
+    ) }} AS inscription_transfers_id,
     '{{ invocation_id }}' AS _invocation_id
 FROM
     bronze_data
