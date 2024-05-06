@@ -64,8 +64,8 @@ flatten_response AS (
         block_hash,
         offset,
         source,
-        VALUE :id :: STRING AS id,
-        VALUE :number :: INT AS ordinal_number,
+        VALUE :id :: STRING AS inscription_id,
+        VALUE :number :: INT AS inscription_number,
         VALUE :from :: variant AS transfer_from_data,
         VALUE :to :: variant AS transfer_to_data,
         _inserted_timestamp
@@ -93,8 +93,10 @@ SELECT
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
-        ['block_number', 'id']
+        ['block_number', 'inscription_id']
     ) }} AS inscription_transfers_id,
     '{{ invocation_id }}' AS _invocation_id
 FROM
     bronze_data
+
+{# Need a qualify statement, probably. #}
