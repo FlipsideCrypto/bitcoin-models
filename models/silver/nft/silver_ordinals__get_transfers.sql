@@ -1,15 +1,7 @@
 {{ config(
-    materialized = 'incremental',
-    incremental_strategy = 'merge',
-    merge_exclude_columns = ["inserted_timestamp"],
-    unique_key = 'get_transfers_id',
-    cluster_by = ["block_number"],
-    tags = ["hiro_api"],
-    enabled = False
+    materialized = 'view'
 ) }}
-{# If can call a SPROC from a UDF, then this model is cleaner. 
-Otherwise, use SP_GET_INSCRIPTION_TRANSFERS to request and build in BRONZE_API schema #}
-
+{# SL2.0 integration - add config to send LQ calls through streamline #}
 WITH blocks AS (
 
     SELECT
@@ -21,10 +13,11 @@ WITH blocks AS (
         {{ ref('silver_ordinals__transfers_per_block') }}
 
 {% if is_incremental() %}
+{# Todo - probably reduce this or just use standard timestamp >= max(timestamp) #}
 WHERE
     _inserted_timestamp >= SYSDATE() - INTERVAL '1 DAY'
 {% endif %}
-), 
+),
 input_spine AS (
     SELECT
         block_number,
@@ -51,43 +44,18 @@ SELECT
     block_hash,
     offset
 FROM
-    {{ this }}
+    {{ ref('silver_ordinals__inscription_transfers') }}
 WHERE
     status_code = 200
 {% endif %}
-),
-requests AS (
-    SELECT
-        block_number,
-        block_hash,
-        offset,
-        {{ target.database }}.streamline.udf_get_inscription_transfers_by_block(
-            block_hash,
-            offset
-        ) AS response
-    FROM
-        request_ids
-LIMIT 500
 )
 SELECT
-    concat_ws(
-        '-',
-        block_number,
-        offset
-    ) AS request_id,
     block_number,
     block_hash,
     offset,
-    ARRAY_SIZE(
-        response :data :results :: ARRAY
-    ) AS result_count,
-    response,
-    response :status_code AS status_code,
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    {{ dbt_utils.generate_surrogate_key(
-        ['block_number', 'offset']
-    ) }} AS get_transfers_id,
-    '{{ invocation_id }}' AS _invocation_id
+    {{ target.database }}.streamline.udf_get_inscription_transfers_by_block(
+        block_hash,
+        offset
+    ) AS response
 FROM
-    requests
+    request_ids

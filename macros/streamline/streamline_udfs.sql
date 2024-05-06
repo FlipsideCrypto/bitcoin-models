@@ -1,4 +1,6 @@
 {% macro create_udf_get_chainhead() %}
+{# TODO update for SL2.0
+Add in the udf_bulk_rest_api_v2 create function with prod and dev config #}
     {% if target.name == "prod" %}
         CREATE OR REPLACE EXTERNAL FUNCTION streamline.udf_get_chainhead() returns variant api_integration = aws_bitcoin_api AS 
             'https://xgp8ztpp0b.execute-api.us-east-1.amazonaws.com/prod/get_chainhead'

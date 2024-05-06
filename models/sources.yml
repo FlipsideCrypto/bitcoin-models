@@ -17,6 +17,11 @@ sources:
       - name: blocks_hash
       - name: blocks
       - name: transactions
+      # TBD TODO
+      - name: blocks_hash_v2
+      - name: blocks_v2
+      - name: transactions_v2
+      - name: hiro_get_transfers_response
   - name: crosschain_silver
     database: "{{ 'crosschain' if target.database == 'BITCOIN' else 'crosschain_dev' }}"
     schema: silver
@@ -50,5 +55,4 @@ sources:
     database: "{{ 'BITCOIN' if target.profile == 'prod' else 'BITCOIN_DEV' }}"
     schema: bronze_api
     tables:
-      - name: get_transfers_response
       - name: get_transfers_response_backfill

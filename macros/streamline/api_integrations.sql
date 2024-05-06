@@ -1,4 +1,5 @@
 {% macro create_aws_bitcoin_api() %}
+{# TODO - update for SL2.0 #}
     {% if target.name == "prod" %}
         {% set sql %}
         CREATE api integration IF NOT EXISTS aws_bitcoin_api api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::490041342817:role/bitcoin-api-prod-rolesnowflakeudfsAF733095-BXQYHR6NEDUG' api_allowed_prefixes = (

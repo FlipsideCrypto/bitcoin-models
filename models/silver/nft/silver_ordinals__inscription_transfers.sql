@@ -3,10 +3,10 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'get_transfers_id',
-    cluster_by = ["block_number"],
+    cluster_by = ["_partition_by_block_number"],
     tags = ["hiro_api"]
 ) }}
-{# todo - create block partition for cluster? #}
+
 WITH bronze_data AS (
 
     SELECT
@@ -19,8 +19,9 @@ WITH bronze_data AS (
         ) AS result_count,
         response :status_code AS status_code,
         _inserted_timestamp,
-        'livequery' AS source
+        'streamline' AS source
     FROM
+    {# Ref to view on external table with Streamline responses #}
         {{ source(
             'bronze_api',
             'get_transfers_response'
@@ -71,6 +72,10 @@ SELECT
     response,
     status_code,
     _inserted_timestamp,
+    ROUND(
+        block_number,
+        -3
+    ) AS _partition_by_block_number,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     {{ dbt_utils.generate_surrogate_key(
