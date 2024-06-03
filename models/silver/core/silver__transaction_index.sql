@@ -13,15 +13,16 @@ WITH blocks AS (
         *
     FROM
         {{ ref('silver__blocks') }}
+    WHERE
+        NOT is_pending
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp) _inserted_timestamp
+    FROM
+        {{ this }}
+)
 {% endif %}
 ),
 FINAL AS (

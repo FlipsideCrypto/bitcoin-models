@@ -52,3 +52,10 @@ SELECT
     block_number::STRING AS params
 FROM
     tbl
+UNION ALL
+SELECT
+    block_number,
+    'getblockhash' AS method,
+    block_number::STRING AS params
+FROM
+    {{ ref('_pending_blocks')}}

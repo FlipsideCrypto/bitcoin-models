@@ -61,7 +61,7 @@ SELECT
     ) AS params
 FROM
     tbl
-UNION
+UNION ALL
 SELECT
     block_number,
     'getblock' AS method,
@@ -72,7 +72,7 @@ SELECT
     ) AS params
 FROM
     {{ ref('_pending_blocks') }}
-UNION
+UNION ALL
 SELECT
     block_number,
     'getblock' AS method,

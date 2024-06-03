@@ -1,19 +1,29 @@
 {{ config(
-  severity = 'error'
+  severity = 'error',
+  tags = ['check_block_fork']
 ) }}
 -- enabled in addition to sequence gap test to ensure we have the correct blocks by hash
 WITH silver_blocks AS (
 
   SELECT
+    LAG(block_number) over (
+      ORDER BY
+        block_number ASC
+    ) = (
+      block_number - 1
+    ) AS likely_block_fork,
     block_number,
-    block_number - 1 AS missing_block_number,
     block_timestamp,
     block_hash,
-    previous_block_hash,
+    previous_block_hash AS parent_block_hash_expected,
+    LAG(block_number) over (
+      ORDER BY
+        block_number ASC
+    ) AS prior_height_actual,
     LAG(block_hash) over (
       ORDER BY
         block_number ASC
-    ) AS prior_hash,
+    ) AS prior_hash_actual,
     _partition_by_block_id,
     SYSDATE() AS _test_timestamp
   FROM
@@ -26,4 +36,4 @@ SELECT
 FROM
   silver_blocks
 WHERE
-  prior_hash <> previous_block_hash
+  parent_block_hash_expected <> prior_hash_actual
