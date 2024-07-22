@@ -7,36 +7,37 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
 ) }}
 
-WITH blocks AS (
+WITH transactions AS (
 
     SELECT
-        *
-    FROM
-        {{ ref('silver__blocks') }}
-
-{% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
-{% endif %}
-),
-transactions AS (
-    SELECT
-        *
+        block_timestamp,
+        block_hash,
+        block_number,
+        coinbase,
+        fee,
+        output_value,
+        is_coinbase,
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         {{ ref('silver__transactions') }}
 
 {% if is_incremental() %}
 WHERE
-    block_number IN (
+    modified_timestamp >= (
+        SELECT
+            MAX(modified_timestamp)
+        FROM
+            {{ this }}
+    )
+    OR block_number IN (
         SELECT
             DISTINCT block_number
         FROM
-            blocks
+            {{ this }}
+        WHERE
+            modified_timestamp >= SYSDATE() - INTERVAL '3 days'
+            AND fees IS NULL
     )
 {% endif %}
 ),
@@ -51,10 +52,14 @@ tx_value AS (
 ),
 coinbase AS (
     SELECT
+        block_timestamp,
         block_number,
+        block_hash,
         coinbase,
         output_value AS coinbase_value,
-        streamline.udf_decode_hex_to_string(coinbase) AS coinbase_decoded
+        streamline.udf_decode_hex_to_string(coinbase) AS coinbase_decoded,
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
         transactions
     WHERE
@@ -62,19 +67,18 @@ coinbase AS (
 ),
 blocks_final AS (
     SELECT
-        block_timestamp,
-        b.block_number,
-        b.block_hash,
+        C.block_timestamp,
+        v.block_number,
+        C.block_hash,
         C.coinbase_value AS total_reward,
         C.coinbase_value - v.fees AS block_reward,
         v.fees,
         C.coinbase,
         C.coinbase_decoded,
-        b._partition_by_block_id,
-        b._inserted_timestamp
+        C._partition_by_block_id,
+        C._inserted_timestamp
     FROM
-        blocks b
-        LEFT JOIN tx_value v USING (block_number)
+        tx_value v
         LEFT JOIN coinbase C USING (block_number)
 )
 SELECT
