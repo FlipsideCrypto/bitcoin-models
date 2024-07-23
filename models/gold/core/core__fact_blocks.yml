@@ -9,7 +9,7 @@ models:
           column_name: block_number
           where: BLOCK_TIMESTAMP::DATE < CURRENT_DATE
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
           interval: 1
 

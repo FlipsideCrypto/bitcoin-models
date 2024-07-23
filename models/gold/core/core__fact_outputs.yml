@@ -6,7 +6,7 @@ models:
       Parsed output data from the `outputs` field in the transaction body.
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
           interval: 1
 
