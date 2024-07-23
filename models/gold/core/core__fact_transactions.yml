@@ -6,7 +6,7 @@ models:
       Final Bitcoin transactions model with value and coinbase information added from inputs and outputs.
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
           interval: 1
       - dbt_utils.unique_combination_of_columns:

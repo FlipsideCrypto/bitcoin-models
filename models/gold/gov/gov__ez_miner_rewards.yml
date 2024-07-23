@@ -7,7 +7,7 @@ models:
 
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
           interval: 1
       - sequence_gaps:

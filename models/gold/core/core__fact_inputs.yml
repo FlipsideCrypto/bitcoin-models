@@ -6,7 +6,7 @@ models:
       Parsed output data from the `inputs` field in the transaction body, with spent tx output and block data appended.
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
           interval: 1
 
