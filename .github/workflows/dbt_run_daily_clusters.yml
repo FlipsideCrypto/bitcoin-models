@@ -47,15 +47,15 @@ jobs:
 
       - name: Run Entity Cluster Changelog
         run: |
-          dbt run -s tag:entity_cluster_0
+          dbt run -s "bitcoin_models,tag:entity_cluster_0"
 
       - name: Run Entity Cluster Full Log Update
         run: |
-          dbt run -s tag:entity_cluster
+          dbt run -s "bitcoin_models,tag:entity_cluster"
 
       - name: Build Clustered Transfers Table
         run: |
-          dbt run -s silver__transfers --full-refresh
+          dbt run -s "bitcoin_models,silver__transfers" --full-refresh
 
       - name: Store logs
         uses: actions/upload-artifact@v3

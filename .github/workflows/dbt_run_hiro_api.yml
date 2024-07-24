@@ -45,7 +45,7 @@ jobs:
 
       - name: Block Inscription Transfer and Count Requests
         run: >
-          dbt run -s tag:hiro_api
+          dbt run -s "bitcoin_models,tag:hiro_api"
         continue-on-error: true
 
       - name: Store logs
