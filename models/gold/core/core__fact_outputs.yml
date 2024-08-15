@@ -6,9 +6,9 @@ models:
       Parsed output data from the `outputs` field in the transaction body.
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
-          interval: 1
+          interval: 2
 
     columns:
       - name: BLOCK_TIMESTAMP
@@ -69,7 +69,14 @@ models:
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: FLOAT
+              column_type: NUMBER
+
+      - name: VALUE_SATS
+        description: "{{ doc('value_sats') }}"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
 
       - name: OUTPUT_ID
         description: "{{ doc('output_id') }}"

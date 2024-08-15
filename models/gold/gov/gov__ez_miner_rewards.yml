@@ -7,9 +7,9 @@ models:
 
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
-          interval: 1
+          interval: 2
       - sequence_gaps:
           column_name: block_number
           where: BLOCK_TIMESTAMP::DATE < CURRENT_DATE
@@ -28,6 +28,9 @@ models:
 
       - name: BLOCK_HASH
         description: "{{ doc('block_hash') }}"
+
+      - name: COINBASE_DECODED
+        description: "{{ doc('coinbase_decoded') }}"
 
       - name: TOTAL_REWARD
         description: "{{ doc('total_reward') }}"

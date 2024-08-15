@@ -2,10 +2,10 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_predicates = ['block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
+    incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'output_id',
     tags = ["core", "scheduled_core"],
-    cluster_by = ["_partition_by_block_id", "tx_id"],
+    cluster_by = ["block_timestamp::DATE","_partition_by_block_id"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
 ) }}
 
@@ -39,7 +39,8 @@ FINAL AS (
         o.value :scriptPubKey :desc :: STRING AS pubkey_script_desc,
         o.value :scriptPubKey :hex :: STRING AS pubkey_script_hex,
         o.value :scriptPubKey :type :: STRING AS pubkey_script_type,
-        o.value :value :: FLOAT AS VALUE,
+        to_decimal(o.value :value, 17, 8) AS VALUE,
+        (to_decimal(o.value :value, 17, 8) * pow(10,8)) :: INTEGER as VALUE_SATS,
         t._inserted_timestamp,
         t._partition_by_block_id,
         {{ dbt_utils.generate_surrogate_key(['t.block_number', 't.tx_id', 'o.value :n :: NUMBER']) }} AS output_id

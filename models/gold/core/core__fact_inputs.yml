@@ -6,9 +6,9 @@ models:
       Parsed output data from the `inputs` field in the transaction body, with spent tx output and block data appended.
     tests:
       - dbt_utils.recency:
-          datepart: day
+          datepart: hour
           field: block_timestamp
-          interval: 1
+          interval: 2
 
     columns:
       - name: BLOCK_TIMESTAMP
@@ -122,7 +122,15 @@ models:
           - not_null:
               where: not IS_COINBASE
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: FLOAT
+              column_type: NUMBER
+
+      - name: VALUE_SATS
+        description: "{{ doc('value_sats') }}"
+        tests:
+          - not_null:
+              where: not IS_COINBASE
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: NUMBER
 
       - name: TX_IN_WITNESS
         description: "{{ doc('tx_in_witness') }}"

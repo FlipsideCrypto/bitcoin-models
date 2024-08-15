@@ -2,9 +2,9 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     merge_exclude_columns = ["inserted_timestamp"],
-    incremental_predicates = ['block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
+    incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'tx_id',
-    cluster_by = ["block_number", "tx_id"],
+    cluster_by = ["block_timestamp::DATE","_partition_by_block_id"],
     tags = ["core", "scheduled_core"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
 ) }}
@@ -46,7 +46,8 @@ input_val AS (
     SELECT
         block_number,
         tx_id,
-        SUM(VALUE) AS input_value
+        SUM(VALUE) AS input_value,
+        SUM(value_sats) AS input_value_sats
     FROM
         inputs
     GROUP BY
@@ -70,9 +71,11 @@ transactions_final AS (
         inputs,
         input_count,
         i.input_value,
+        i.input_value_sats,
         outputs,
         output_count,
         output_value,
+        output_value_sats,
         virtual_size,
         weight,
         IFF(
