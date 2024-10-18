@@ -53,10 +53,3 @@ SELECT
     block_hash AS params
 FROM
     tbl
-UNION
-SELECT
-    block_number,
-    'getblock' AS method,
-    block_hash AS params
-FROM
-    {{ ref('_pending_blocks') }}

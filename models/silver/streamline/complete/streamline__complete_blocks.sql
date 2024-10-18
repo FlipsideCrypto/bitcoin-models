@@ -21,6 +21,7 @@ WHERE
         FROM
             {{ this }}
     )
+    AND data:result:nextblockhash::string is not null
 {% else %}
     {{ ref('bronze__streamline_FR_blocks') }}
 {% endif %}
