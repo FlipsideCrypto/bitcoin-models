@@ -39,17 +39,6 @@ models:
     columns: true
   +on_schema_change: "append_new_columns"
 
-vars:
-  "dbt_date:time_zone": GMT
-  STREAMLINE_INVOKE_STREAMS: False
-  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
-  STREAMLINE_RUN_HISTORY: False
-  UPDATE_UDFS_AND_SPS: False
-  UPDATE_SNOWFLAKE_TAGS: True
-  WAIT: 0
-  OBSERV_FULL_TEST: False
-  START_GHA_TASKS: False
-
 tests:
   +store_failures: true # all tests
 
@@ -70,3 +59,43 @@ dispatch:
 query-comment:
   comment: "{{ dbt_snowflake_query_tags.get_query_comment(node) }}"
   append: true # Snowflake removes prefixed comments.
+
+vars:
+  "dbt_date:time_zone": GMT
+  STREAMLINE_INVOKE_STREAMS: False
+  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
+  STREAMLINE_RUN_HISTORY: False
+  UPDATE_UDFS_AND_SPS: False
+  UPDATE_SNOWFLAKE_TAGS: True
+  WAIT: 0
+  OBSERV_FULL_TEST: False
+  START_GHA_TASKS: False
+
+#### STREAMLINE 2.0 BEGIN ####
+
+  API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}' 
+  EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
+  API_AWS_ROLE_ARN: '{{ var("config")[target.name]["API_AWS_ROLE_ARN"] if var("config")[target.name] else var("config")["dev"]["API_AWS_ROLE_ARN"] }}'
+  ROLES: '{{ var("config")[target.name]["ROLES"] }}'
+
+
+  config:
+  # The keys correspond to dbt profiles and are case sensitive
+    dev:
+      API_INTEGRATION: AWS_BITCOIN_API_STG
+      EXTERNAL_FUNCTION_URI: zta5i3yyxd.execute-api.us-east-1.amazonaws.com/stg/
+      API_AWS_ROLE_ARN: arn:aws:iam::704693948482:role/bitcoin-api-stg-rolesnowflakeudfsAF733095-Kp1QvE8vqElN
+      ROLES:
+        - AWS_LAMBDA_BITCOIN_API
+        - INTERNAL_DEV
+
+    prod:
+      API_INTEGRATION: AWS_BITCOIN_API_PROD
+      EXTERNAL_FUNCTION_URI: 6fmgkfdhy6.execute-api.us-east-1.amazonaws.com/prod/
+      API_AWS_ROLE_ARN: arn:aws:iam::924682671219:role/bitcoin-api-prod-rolesnowflakeudfsAF733095-D1PYK9UQXd8m
+      ROLES:
+        - AWS_LAMBDA_BITCOIN_API
+        - INTERNAL_DEV
+        - DBT_CLOUD_BITCOIN
+
+#### STREAMLINE 2.0 END ####
