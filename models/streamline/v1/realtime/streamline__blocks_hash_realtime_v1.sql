@@ -21,7 +21,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
         SELECT
             block_number
         FROM
-            {{ ref("streamline__blocks") }}
+            {{ ref("streamline__blocks_v1") }}
         WHERE
             (
                 block_number >= (
@@ -36,7 +36,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
         SELECT
             block_number
         FROM
-            {{ ref("streamline__complete_blocks_hash") }}
+            {{ ref("streamline__complete_blocks_hash_v1") }}
         WHERE
             block_number >= (
                 SELECT
