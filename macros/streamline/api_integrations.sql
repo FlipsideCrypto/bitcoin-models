@@ -8,7 +8,7 @@
         {% do run_query(sql) %}
     {% else %}
         {% set sql %}
-        CREATE api integration IF NOT EXISTS aws_bitcoin_dev_api api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::704693948482:role/bitcoin-api-stg-rolesnowflakeudfsAF733095-Kp1QvE8vqElN' api_allowed_prefixes = (
+        CREATE api integration IF NOT EXISTS aws_bitcoin_api_dev api_provider = aws_api_gateway api_aws_role_arn = 'arn:aws:iam::704693948482:role/bitcoin-api-stg-rolesnowflakeudfsAF733095-Kp1QvE8vqElN' api_allowed_prefixes = (
             'https://zta5i3yyxd.execute-api.us-east-1.amazonaws.com/stg/'
         ) enabled = TRUE;
         {% endset %}

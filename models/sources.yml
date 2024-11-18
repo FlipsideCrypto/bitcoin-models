@@ -17,6 +17,8 @@ sources:
       - name: blocks_hash
       - name: blocks
       - name: transactions
+      - name: blocks_hash_v2
+      - name: blocks_transactions_v2
   - name: crosschain_silver
     database: "{{ 'crosschain' if target.database == 'BITCOIN' else 'crosschain_dev' }}"
     schema: silver
