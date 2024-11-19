@@ -18,9 +18,9 @@ WITH inputs AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+            MAX(modified_timestamp) modified_timestamp
         FROM
             {{ this }}
     )

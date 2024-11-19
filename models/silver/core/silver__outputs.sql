@@ -12,26 +12,32 @@
 WITH txs AS (
 
     SELECT
-        *
+        block_number,
+        block_hash,
+        block_timestamp,
+        tx_id,
+        outputs,
+        _partition_by_block_id,
+        _inserted_timestamp
     FROM
         {{ ref('silver__transactions') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+            MAX(modified_timestamp) modified_timestamp
         FROM
             {{ this }}
     )
 {% endif %}
 ),
-FINAL AS (
+flattened_outputs AS (
     SELECT
         t.block_number,
         t.block_hash,
         t.block_timestamp,
-        t.tx_id AS tx_id,
+        t.tx_id,
         o.value :: variant AS output_data,
         o.value :n :: NUMBER AS INDEX,
         o.value :scriptPubKey :address :: STRING AS pubkey_script_address,
@@ -42,16 +48,16 @@ FINAL AS (
         to_decimal(o.value :value, 17, 8) AS VALUE,
         (to_decimal(o.value :value, 17, 8) * pow(10,8)) :: INTEGER as VALUE_SATS,
         t._inserted_timestamp,
-        t._partition_by_block_id,
-        {{ dbt_utils.generate_surrogate_key(['t.block_number', 't.tx_id', 'o.value :n :: NUMBER']) }} AS output_id
+        t._partition_by_block_id
     FROM
         txs t,
         LATERAL FLATTEN(outputs) o
 )
 SELECT
     *,
+    {{ dbt_utils.generate_surrogate_key(['block_number', 'tx_id', 'index']) }} AS output_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL
+    flattened_outputs

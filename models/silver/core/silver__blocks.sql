@@ -7,44 +7,48 @@
     tags = ["core", "scheduled_core"]
 ) }}
 
-WITH bronze_blocks AS (
+WITH blocks AS (
 
     SELECT
-        *
+        block_number,
+        block_header,
+        _inserted_timestamp,
+        _partition_by_block_id
     FROM
-        {{ ref('bronze__blocks') }}
+        {{ ref('silver__blocks_transactions') }}
+    WHERE
+        NOT is_pending
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+AND modified_timestamp >= (
+    SELECT
+        MAX(modified_timestamp) modified_timestamp
+    FROM
+        {{ this }}
+)
 {% endif %}
 ),
 FINAL AS (
     SELECT
         block_number,
-        DATA :result :bits :: STRING AS bits,
-        DATA :result :chainwork :: STRING AS chainwork,
-        DATA :result :difficulty :: FLOAT AS difficulty,
-        DATA :result :hash :: STRING AS block_hash,
-        DATA :result :mediantime :: timestamp_ntz AS median_time,
-        DATA :result :merkleroot :: STRING AS merkle_root,
-        DATA :result :nTx :: NUMBER AS tx_count,
-        DATA :result :nextblockhash :: STRING AS next_block_hash,
-        DATA :result :nextblockhash IS NULL AS is_pending,
-        DATA :result :nonce :: NUMBER AS nonce,
-        DATA :result :previousblockhash :: STRING AS previous_block_hash,
-        DATA :result :strippedsize :: NUMBER AS stripped_size,
-        DATA :result :size :: NUMBER AS SIZE,
-        DATA :result :time :: timestamp_ntz AS block_timestamp,
-        DATA :result :tx :: ARRAY AS tx,
-        DATA :result :version :: STRING AS version,
-        DATA :result :weight :: STRING AS weight,
-        DATA: error :: STRING AS error,
+        block_header :bits :: STRING AS bits,
+        block_header :chainwork :: STRING AS chainwork,
+        block_header :difficulty :: FLOAT AS difficulty,
+        block_header :hash :: STRING AS block_hash,
+        block_header :mediantime :: timestamp_ntz AS median_time,
+        block_header :merkleroot :: STRING AS merkle_root,
+        block_header :nTx :: NUMBER AS tx_count,
+        block_header :nextblockhash :: STRING AS next_block_hash,
+        block_header :nextblockhash IS NULL AS is_pending,
+        block_header :nonce :: NUMBER AS nonce,
+        block_header :previousblockhash :: STRING AS previous_block_hash,
+        block_header :strippedsize :: NUMBER AS stripped_size,
+        block_header :size :: NUMBER AS SIZE,
+        block_header :time :: timestamp_ntz AS block_timestamp,
+        [] AS tx, -- note, is just array of tx ids in curr table
+        block_header :version :: STRING AS version,
+        block_header :weight :: STRING AS weight,
+        block_header :error :: STRING AS error,
         _partition_by_block_id,
         _inserted_timestamp,
         {{ dbt_utils.generate_surrogate_key(
@@ -54,7 +58,7 @@ FINAL AS (
         SYSDATE() AS modified_timestamp,
         '{{ invocation_id }}' AS _invocation_id
     FROM
-        bronze_blocks
+        blocks
 )
 SELECT
     *

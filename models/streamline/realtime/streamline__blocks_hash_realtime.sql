@@ -8,22 +8,25 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params ={ "external_table" :"blocks_hash_v2",
         "sql_limit" :"500",
-        "producer_batch_size" :"100",
-        "worker_batch_size" :"100",
+        "producer_batch_size" :"250",
+        "worker_batch_size" :"250",
         "sql_source" :"{{this.identifier}}" }
     )
 ) }}
 
-WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
+WITH last_3_days AS (
+{% if var('STREAMLINE_RUN_HISTORY') %}
 
     SELECT
         0 AS block_number
     {% else %}
     SELECT
-        MAX(block_number) - 500 AS block_number -- aprox 3 days
-    FROM
-        {{ ref("streamline__blocks") }}
-    {% endif %}),
+        870500 AS block_number -- temp cutover point for dev
+        -- MAX(block_number) - 500 AS block_number -- approx 3 days
+    -- FROM
+        -- {{ ref("streamline__blocks") }}
+    {% endif %}
+),
     tbl AS (
         SELECT
             block_number

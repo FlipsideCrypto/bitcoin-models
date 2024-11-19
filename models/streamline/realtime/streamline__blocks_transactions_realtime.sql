@@ -1,14 +1,15 @@
 -- depends_on: {{ ref('streamline__complete_blocks_hash') }}
 -- depends_on: {{ ref('streamline__complete_blocks_transactions') }}
+
 {{ config (
     materialized = "view",
     post_hook = fsc_utils.if_data_call_function_v2(
         func = 'streamline.udf_bulk_rest_api_v2',
         target = "{{this.schema}}.{{this.identifier}}",
         params ={ "external_table" :"blocks_transactions_v2",
-        "sql_limit" :"500",
-        "producer_batch_size" :"100",
-        "worker_batch_size" :"100",
+        "sql_limit" :"250",
+        "producer_batch_size" :"50",
+        "worker_batch_size" :"50",
         "sql_source" :"{{this.identifier}}" }
     )
 ) }}
@@ -20,10 +21,12 @@ WITH last_3_days AS (
         0 AS block_number
     {% else %}
     SELECT
-        MAX(block_number) - 500 AS block_number --aprox 3 days
-    FROM
-        {{ ref("streamline__blocks") }}
-    {% endif %}),
+        870500 AS block_number -- temp cutover point for dev
+    --     MAX(block_number) - 500 AS block_number -- approx 3 days
+    -- FROM
+    --     {{ ref("streamline__blocks") }}
+    {% endif %}
+),
     tbl AS (
         SELECT
             block_number,

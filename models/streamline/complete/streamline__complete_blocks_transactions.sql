@@ -2,6 +2,8 @@
 -- depends_on: {{ ref('bronze__streamline_FR_blocks_transactions') }}
 {{ config (
     materialized = "incremental",
+    incremental_strategy = "merge",
+    merge_exclude_columns = ["inserted_timestamp"],
     unique_key = "block_number",
     cluster_by = "partition_key",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)",
@@ -13,7 +15,10 @@ SELECT
     VALUE :BLOCK_HASH :: STRING AS block_hash,
     DATA :result :nextblockhash :: STRING IS NULL as is_pending,
     partition_key,
-    _inserted_timestamp
+    _inserted_timestamp,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
 
 {% if is_incremental() %}
