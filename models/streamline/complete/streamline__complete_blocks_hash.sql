@@ -8,9 +8,9 @@
 ) }}
 
 SELECT
-    VALUE :block_number :: INT AS block_number,
+    VALUE :BLOCK_NUMBER :: INT AS block_number,
     data :result :: STRING AS block_hash,
-    VALUE :partition_key :: INT AS partition_key,
+    partition_key,
     _inserted_timestamp
 FROM
 
