@@ -59,4 +59,4 @@ SELECT
     'getblock' AS method,
     block_hash AS params
 FROM
-    {{ ref('_pending_blocks') }}
+    {{ ref('_pending_blocks_v1') }}

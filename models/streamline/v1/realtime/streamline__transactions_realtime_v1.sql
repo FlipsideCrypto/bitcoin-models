@@ -71,7 +71,7 @@ SELECT
         '2'
     ) AS params
 FROM
-    {{ ref('_pending_blocks') }}
+    {{ ref('_pending_blocks_v1') }}
 UNION
 SELECT
     block_number,
@@ -82,4 +82,4 @@ SELECT
         '2'
     ) AS params
 FROM
-    {{ ref('_missing_transactions') }}
+    {{ ref('_missing_transactions_v1') }}

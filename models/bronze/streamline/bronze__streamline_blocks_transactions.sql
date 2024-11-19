@@ -1,6 +1,6 @@
 {{ config (
     materialized = 'view',
-    tags = ['streamline_core']
+    tags = ['streamline_core', 'streamline_helper']
 ) }}
 
 {{ streamline_external_table_query_v2(

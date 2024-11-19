@@ -141,8 +141,7 @@ WHERE
             AND b.partition_key = s.partition_key
         WHERE
             b.partition_key = s.partition_key
-            AND DATA :error IS NULL
-             
+            AND (DATA :error IS NULL OR DATA :error :: STRING is null)
 {% endmacro %}
 
 {% macro streamline_external_table_FR_query_v2(
@@ -176,5 +175,5 @@ FROM
     AND b.partition_key = s.partition_key
 WHERE
     b.partition_key = s.partition_key
-    AND DATA :error IS NULL
+    AND (DATA :error IS NULL OR DATA :error :: STRING is null)
 {% endmacro %}

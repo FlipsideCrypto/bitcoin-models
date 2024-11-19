@@ -1,5 +1,5 @@
--- depends_on: {{ ref('bronze__streamline_blocks_hash') }}
--- depends_on: {{ ref('bronze__streamline_FR_blocks_hash') }}
+-- depends_on: {{ ref('bronze__streamline_blocks_transactions') }}
+-- depends_on: {{ ref('bronze__streamline_FR_blocks_transactions') }}
 {{ config (
     materialized = "incremental",
     unique_key = "block_number",
@@ -10,13 +10,14 @@
 
 SELECT
     VALUE :BLOCK_NUMBER :: INT AS block_number,
-    data :result :: STRING AS block_hash,
+    VALUE :BLOCK_HASH :: STRING AS block_hash,
+    DATA :result :nextblockhash :: STRING IS NULL as is_pending,
     partition_key,
     _inserted_timestamp
 FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_blocks_hash') }}
+{{ ref('bronze__streamline_blocks_transactions') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -25,7 +26,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_FR_blocks_hash') }}
+    {{ ref('bronze__streamline_FR_blocks_transactions') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
