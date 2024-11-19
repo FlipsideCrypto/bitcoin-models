@@ -70,7 +70,7 @@ SELECT
             'getblockhash',
             'params',
             ARRAY_CONSTRUCT(
-                block_number :: STRING
+                block_number
             )
         ),
         'Vault/prod/bitcoin/quicknode'
