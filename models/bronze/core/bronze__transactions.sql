@@ -6,7 +6,8 @@
     incremental_strategy = 'delete+insert',
     incremental_predicates = ['block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
 ) }}
--- depends_on: {{ ref('bronze__streamline_transactions') }}
+-- depends_on: {{ ref('bronze__streamline_transactions_v1') }}
+-- depends_on: {{ ref('bronze__streamline_FR_transactions_v1') }}
 WITH streamline_transactions AS (
 
     SELECT
@@ -14,7 +15,7 @@ WITH streamline_transactions AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_transactions') }}
+{{ ref('bronze__streamline_transactions_v1') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -23,7 +24,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_FR_transactions') }}
+    {{ ref('bronze__streamline_FR_transactions_v1') }}
 {% endif %}
 ),
 FINAL AS (

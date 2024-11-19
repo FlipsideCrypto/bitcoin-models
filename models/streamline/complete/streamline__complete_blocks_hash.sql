@@ -2,15 +2,15 @@
 -- depends_on: {{ ref('bronze__streamline_FR_blocks_hash') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "id",
-    cluster_by = "ROUND(block_number, -3)",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(id)"
+    unique_key = "block_number",
+    cluster_by = "partition_key",
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(block_number)"
 ) }}
 
 SELECT
-    id,
-    block_number,
-    data:result::STRING AS block_hash,
+    VALUE :block_number :: INT AS block_number,
+    data :result :: STRING AS block_hash,
+    VALUE :partition_key :: INT AS partition_key,
     _inserted_timestamp
 FROM
 
@@ -27,6 +27,6 @@ WHERE
     {{ ref('bronze__streamline_FR_blocks_hash') }}
 {% endif %}
 
-qualify(ROW_NUMBER() over (PARTITION BY id
+qualify(ROW_NUMBER() over (PARTITION BY block_number
 ORDER BY
     _inserted_timestamp DESC)) = 1

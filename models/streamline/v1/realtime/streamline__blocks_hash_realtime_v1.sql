@@ -15,7 +15,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
     SELECT
         MAX(block_number) - 500 AS block_number --aprox 3 days
     FROM
-        {{ ref("streamline__blocks") }}
+        {{ ref("streamline__blocks_v1") }}
     {% endif %}),
     tbl AS (
         SELECT
