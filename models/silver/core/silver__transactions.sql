@@ -34,7 +34,7 @@ flatten_transactions AS (
         block_number,
         block_header :hash :: STRING AS block_hash,
         block_header :time :: timestamp_ntz AS block_timestamp,
-        VALUE :hash :: STRING AS tx_id,
+        VALUE :txid :: STRING AS tx_id,
         INDEX,
         VALUE :: VARIANT AS tx_data,
         _partition_by_block_id,

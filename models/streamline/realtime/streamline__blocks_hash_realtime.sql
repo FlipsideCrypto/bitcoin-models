@@ -21,10 +21,9 @@ WITH last_3_days AS (
         0 AS block_number
     {% else %}
     SELECT
-        870500 AS block_number -- temp cutover point for dev
-        -- MAX(block_number) - 500 AS block_number -- approx 3 days
-    -- FROM
-        -- {{ ref("streamline__blocks") }}
+        MAX(block_number) - 500 AS block_number -- approx 3 days
+    FROM
+        {{ ref("streamline__blocks") }}
     {% endif %}
 ),
     tbl AS (
