@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     incremental_predicates = ['block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'tx_id',
-    cluster_by = ["_inserted_timestamp::DATE", "block_number"],
+    cluster_by = ["modified_timestamp::DATE", "block_number"],
     tags = ["core", "scheduled_core"]
 ) }}
 

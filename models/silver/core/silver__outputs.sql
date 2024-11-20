@@ -5,8 +5,7 @@
     incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'output_id',
     tags = ["core", "scheduled_core"],
-    cluster_by = ["block_timestamp::DATE","_partition_by_block_id"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
+    cluster_by = ["modified_timestamp::DATE", "_partition_by_block_id"]
 ) }}
 
 WITH txs AS (

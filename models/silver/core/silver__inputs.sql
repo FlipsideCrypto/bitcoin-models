@@ -5,8 +5,7 @@
     incremental_predicates = ['block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'input_id',
     tags = ["core", "scheduled_core"],
-    cluster_by = ["_inserted_timestamp"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
+    cluster_by = ["modified_timestamp::DATE", "block_number"]
 ) }}
 
 WITH txs AS (

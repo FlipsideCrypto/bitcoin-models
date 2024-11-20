@@ -3,7 +3,7 @@
     incremental_strategy = 'merge',
     merge_exclude_columns = ["inserted_timestamp"],
     unique_key = 'block_number',
-    cluster_by = ["_inserted_timestamp::DATE", "block_number"],
+    cluster_by = ["modified_timestamp::DATE", "block_number"],
     tags = ["core", "scheduled_core"]
 ) }}
 

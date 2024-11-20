@@ -2,7 +2,7 @@
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = 'block_number',
-    cluster_by = ["_inserted_timestamp::DATE", "_partition_by_block_id"],
+    cluster_by = ["modified_timestamp::DATE", "_partition_by_block_id"],
     tags = ["load", "scheduled_core"]
 ) }}
 -- depends on {{ ref('bronze__streamline_blocks_transactions') }}
