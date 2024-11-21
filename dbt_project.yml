@@ -55,7 +55,7 @@ vars:
     'silver/core',
     'gold/core',
     'bronze/core',  
-    'silver/streamline'
+    'streamline'
   ]
 
 tests:
