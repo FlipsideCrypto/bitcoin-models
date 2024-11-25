@@ -41,23 +41,6 @@ models:
   bitcoin_models:
     +pre-hook: '{{ fsc_utils.set_query_tag() }}'
 
-vars:
-  "dbt_date:time_zone": GMT
-  STREAMLINE_INVOKE_STREAMS: False
-  STREAMLINE_USE_DEV_FOR_EXTERNAL_TABLES: False
-  STREAMLINE_RUN_HISTORY: False
-  UPDATE_UDFS_AND_SPS: False
-  UPDATE_SNOWFLAKE_TAGS: True
-  WAIT: 0
-  OBSERV_FULL_TEST: False
-  START_GHA_TASKS: False
-  core_folders: [
-    'silver/core',
-    'gold/core',
-    'bronze/core',  
-    'streamline'
-  ]
-
 tests:
   +store_failures: true # all tests
 
@@ -89,9 +72,13 @@ vars:
   WAIT: 0
   OBSERV_FULL_TEST: False
   START_GHA_TASKS: False
-
+  core_folders: [
+    'silver/core',
+    'gold/core',
+    'bronze/core',  
+    'streamline'
+  ]
 #### STREAMLINE 2.0 BEGIN ####
-
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] }}' 
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] }}'
   API_AWS_ROLE_ARN: '{{ var("config")[target.name]["API_AWS_ROLE_ARN"] if var("config")[target.name] else var("config")["dev"]["API_AWS_ROLE_ARN"] }}'
