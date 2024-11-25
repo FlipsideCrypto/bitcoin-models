@@ -2,10 +2,10 @@
     materialized = 'incremental',
     cluster_by = ["_inserted_timestamp::DATE"],
     unique_key = 'block_number',
-    tags = ["load", "scheduled_core"],
     incremental_strategy = 'delete+insert'
 ) }}
--- depends on {{ref('bronze__streamline_blocks')}}
+-- depends on {{ref('bronze__streamline_blocks_v1')}}
+-- depends on {{ref('bronze__streamline_FR_blocks_v1')}}
 WITH streamline_blocks AS (
 
     SELECT
@@ -13,7 +13,7 @@ WITH streamline_blocks AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_blocks') }}
+{{ ref('bronze__streamline_blocks_v1') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -22,7 +22,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_FR_blocks') }}
+    {{ ref('bronze__streamline_FR_blocks_v1') }}
 {% endif %}
 ),
 FINAL AS (

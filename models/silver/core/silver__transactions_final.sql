@@ -6,40 +6,77 @@
     unique_key = 'tx_id',
     cluster_by = ["block_timestamp::DATE","_partition_by_block_id"],
     tags = ["core", "scheduled_core"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON equality(block_number, tx_id)"
 ) }}
 
-WITH transactions AS (
+{% if execute %}
+    {% set query %}
 
     SELECT
-        *
+        MIN(_partition_by_block_id) _partition_by_block_id
     FROM
-        {{ ref('silver__transactions') }}
-
-{% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
+        {{ ref('silver__inputs_final') }}
+    WHERE
+        modified_timestamp >= (
+            SELECT
+                MAX(modified_timestamp) modified_timestamp
+            FROM
+                {{ this }}
+        ) {% endset %}
+    {% set incremental_load_value = run_query(query) [0] [0] %}
 {% endif %}
-),
-inputs AS (
+
+WITH inputs AS (
     SELECT
-        *
+        block_number,
+        tx_id,
+        value,
+        value_sats
     FROM
         {{ ref('silver__inputs_final') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    _partition_by_block_id >= {{ incremental_load_value }}
+    OR modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+            MAX(modified_timestamp) modified_timestamp
         FROM
             {{ this }}
     )
+{% endif %}
+),
+transactions AS (
+    SELECT
+        block_number,
+        block_hash,
+        block_timestamp,
+        tx_id,
+        INDEX,
+        tx_hash,
+        hex,
+        lock_time,
+        SIZE,
+        version,
+        is_coinbase,
+        coinbase,
+        fee,
+        inputs,
+        input_count,
+        outputs,
+        output_count,
+        output_value,
+        output_value_sats,
+        virtual_size,
+        weight,
+        _partition_by_block_id,
+        _inserted_timestamp
+    FROM
+        {{ ref('silver__transactions') }}
+
+{% if is_incremental() %}
+WHERE
+    _partition_by_block_id >= {{ incremental_load_value }}
 {% endif %}
 ),
 input_val AS (

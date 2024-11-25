@@ -14,14 +14,14 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
     SELECT
         MAX(block_number) - 500 AS block_number --aprox 3 days
     FROM
-        {{ ref("bronze__streamline_blocks_hash") }}
+        {{ ref("bronze__streamline_blocks_hash_v1") }}
     {% endif %}),
     tbl AS (
         SELECT
             block_number,
             DATA :result :: STRING AS block_hash
         FROM
-            {{ ref("bronze__streamline_blocks_hash") }}
+            {{ ref("bronze__streamline_blocks_hash_v1") }}
         WHERE
             (
                 block_number >= (
@@ -36,7 +36,7 @@ WITH last_3_days AS ({% if var('STREAMLINE_RUN_HISTORY') %}
                 SELECT
                     block_number
                 FROM
-                    {{ ref("streamline__complete_blocks") }}
+                    {{ ref("streamline__complete_blocks_v1") }}
                 WHERE
                     block_number >= (
                         SELECT
@@ -59,4 +59,4 @@ SELECT
     'getblock' AS method,
     block_hash AS params
 FROM
-    {{ ref('_pending_blocks') }}
+    {{ ref('_pending_blocks_v1') }}

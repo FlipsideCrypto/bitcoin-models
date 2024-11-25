@@ -1,11 +1,9 @@
 {{ config (
-    materialized = 'view'
+    materialized = 'view',
+    tags = ['streamline_core', 'streamline_helper']
 ) }}
 
-{% set model = this.identifier.split("_") [-2] + '_' + this.identifier.split("_") [-1] %}
-{{ streamline_external_table_FR_query(
-    model,
-    partition_function = "CAST(SPLIT_PART(SPLIT_PART(file_name, '/', 4), '_', 1) AS INTEGER )",
-    partition_name = "_partition_by_block_id",
-    unique_key = "block_number"
+{{ streamline_external_table_FR_query_v2(
+    model = "blocks_hash_v2",
+    partition_function = "CAST(SPLIT_PART(SPLIT_PART(file_name, '/', 3), '_', 1) AS INTEGER )"
 ) }}

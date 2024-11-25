@@ -4,10 +4,23 @@
     merge_exclude_columns = ["inserted_timestamp"],
     incremental_predicates = ['_partition_by_block_id >= (select min(_partition_by_block_id) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'input_id',
-    cluster_by = ["block_timestamp::DATE","_partition_by_block_id"],
+    cluster_by = ["modified_timestamp::DATE", "_partition_by_block_id"],
     tags = ["core", "scheduled_core"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION ON equality(block_number, tx_id)"
 ) }}
+
+{% if execute %}
+{% set query %}
+    SELECT 
+        MIN(_partition_by_block_id) 
+    FROM {{ this }} 
+    WHERE spent_block_number IS NULL 
+        AND NOT is_coinbase
+        AND _inserted_timestamp >= DATEADD(day, -3, CURRENT_DATE)
+{% endset %}
+{% set retry_lookback_value = run_query(query)[0][0] %}
+{% do log("silver__inputs_final retry_lookback_value: " ~ retry_lookback_value, info=True) %}
+{% endif %}
 
 WITH inputs AS (
 
@@ -18,17 +31,29 @@ WITH inputs AS (
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+            MAX(modified_timestamp) modified_timestamp
         FROM
             {{ this }}
     )
+    {% if retry_lookback_value %}
+        OR _partition_by_block_id >= {{ retry_lookback_value }}
+    {% endif %}
 {% endif %}
 ),
 outputs AS (
     SELECT
-        *
+        tx_id,
+        block_number,
+        index,
+        value,
+        value_sats,
+        pubkey_script_asm,
+        pubkey_script_hex,
+        pubkey_script_address,
+        pubkey_script_type,
+        pubkey_script_desc
     FROM
         {{ ref('silver__outputs') }}
 ),

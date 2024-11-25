@@ -5,33 +5,40 @@
     incremental_predicates = ['block_number >= (select min(block_number) from ' ~ generate_tmp_view_name(this) ~ ')'],
     unique_key = 'input_id',
     tags = ["core", "scheduled_core"],
-    cluster_by = ["_inserted_timestamp"],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
+    cluster_by = ["modified_timestamp::DATE", "block_number"]
 ) }}
 
 WITH txs AS (
 
     SELECT
-        *
+        block_number,
+        block_hash,
+        block_timestamp,
+        tx_id,
+        inputs,
+        coinbase,
+        is_coinbase,
+        _partition_by_block_id,
+        _inserted_timestamp
     FROM
         {{ ref('silver__transactions') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp >= (
+    modified_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
+            MAX(modified_timestamp) modified_timestamp
         FROM
             {{ this }}
     )
 {% endif %}
 ),
-inputs AS (
+flattened_inputs AS (
     SELECT
         t.block_number,
         t.block_hash,
         t.block_timestamp,
-        t.tx_id AS tx_id,
+        t.tx_id,
         i.value :: variant AS input_data,
         i.index AS INDEX,
         i.value :scriptSig :asm :: STRING AS script_sig_asm,
@@ -43,16 +50,16 @@ inputs AS (
         t.coinbase,
         t.is_coinbase,
         t._inserted_timestamp,
-        t._partition_by_block_id,
-        {{ dbt_utils.generate_surrogate_key(['t.block_number', 't.tx_id', 'i.index']) }} AS input_id
+        t._partition_by_block_id
     FROM
         txs t,
         LATERAL FLATTEN(inputs) i
 )
 SELECT
     *,
+    {{ dbt_utils.generate_surrogate_key(['block_number', 'tx_id', 'index']) }} AS input_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    inputs
+    flattened_inputs
