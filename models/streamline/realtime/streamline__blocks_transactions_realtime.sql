@@ -10,7 +10,8 @@
         "sql_limit" :"250",
         "producer_batch_size" :"50",
         "worker_batch_size" :"50",
-        "sql_source" :"{{this.identifier}}" }
+        "sql_source" :"{{this.identifier}}",
+        "order_by_column" :"block_number DESC" }
     )
 ) }}
 
@@ -85,5 +86,3 @@ SELECT
     ) AS request
 FROM
     tbl
-ORDER BY
-    block_number DESC

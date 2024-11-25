@@ -38,7 +38,7 @@ WITH inputs AS (
 {% if is_incremental() %}
 WHERE
     _partition_by_block_id >= {{ incremental_load_value }}
-    AND modified_timestamp >= (
+    OR modified_timestamp >= (
         SELECT
             MAX(modified_timestamp) modified_timestamp
         FROM

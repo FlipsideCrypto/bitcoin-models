@@ -19,7 +19,7 @@
         AND _inserted_timestamp >= DATEADD(day, -3, CURRENT_DATE)
 {% endset %}
 {% set retry_lookback_value = run_query(query)[0][0] %}
-{% do log(retry_lookback_value, info=True) %}
+{% do log("silver__inputs_final retry_lookback_value: " ~ retry_lookback_value, info=True) %}
 {% endif %}
 
 WITH inputs AS (

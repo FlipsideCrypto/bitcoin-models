@@ -28,8 +28,8 @@
         json OBJECT
     ) returns ARRAY api_integration = 
     {% if target.name == "prod" %}
-        AWS_BITCOIN_API_PROD AS 'https://6fmgkfdhy6.execute-api.us-east-1.amazonaws.com/prod/udf_bulk_rest_api'
+        AWS_BITCOIN_API_PROD_V2 AS 'https://6fmgkfdhy6.execute-api.us-east-1.amazonaws.com/prod/udf_bulk_rest_api'
     {% else %}
-        AWS_BITCOIN_API_STG AS 'https://zta5i3yyxd.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_rest_api'
+        AWS_BITCOIN_API_STG_V2 AS 'https://zta5i3yyxd.execute-api.us-east-1.amazonaws.com/stg/udf_bulk_rest_api'
     {%- endif %};
 {% endmacro %}
