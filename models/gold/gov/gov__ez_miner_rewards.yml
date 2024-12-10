@@ -9,7 +9,7 @@ models:
       - dbt_utils.recency:
           datepart: hour
           field: block_timestamp
-          interval: 2
+          interval: 12
       - sequence_gaps:
           column_name: block_number
           where: BLOCK_TIMESTAMP::DATE < CURRENT_DATE
