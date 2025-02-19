@@ -112,13 +112,14 @@ WHERE
 
 {% macro streamline_external_table_query_v2(
         model,
-        partition_function
+        partition_function,
+        partition_name
     ) %}
     WITH meta AS (
         SELECT
             job_created_time AS _inserted_timestamp,
             file_name,
-            {{ partition_function }} AS partition_key
+            {{ partition_function }} AS {{ partition_name }}
         FROM
             TABLE(
                 information_schema.external_table_file_registration_history(
@@ -138,21 +139,22 @@ WHERE
             s
             JOIN meta b
             ON b.file_name = metadata$filename
-            AND b.partition_key = s.partition_key
+            AND b.{{ partition_name }} = s.{{ partition_name }}
         WHERE
-            b.partition_key = s.partition_key
+            b.{{ partition_name }} = s.{{ partition_name }}
             AND (DATA :error IS NULL OR DATA :error :: STRING is null)
 {% endmacro %}
 
 {% macro streamline_external_table_FR_query_v2(
         model,
-        partition_function
+        partition_function,
+        partition_name
     ) %}
     WITH meta AS (
         SELECT
             registered_on AS _inserted_timestamp,
             file_name,
-            {{ partition_function }} AS partition_key
+            {{ partition_function }} AS {{ partition_name }}
         FROM
             TABLE(
                 information_schema.external_table_files(
@@ -172,8 +174,8 @@ FROM
     s
     JOIN meta b
     ON b.file_name = metadata$filename
-    AND b.partition_key = s.partition_key
+    AND b.{{ partition_name }} = s.{{ partition_name }}
 WHERE
-    b.partition_key = s.partition_key
+    b.{{ partition_name }} = s.{{ partition_name }}
     AND (DATA :error IS NULL OR DATA :error :: STRING is null)
 {% endmacro %}

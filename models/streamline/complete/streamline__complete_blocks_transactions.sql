@@ -13,7 +13,7 @@
 SELECT
     VALUE :BLOCK_NUMBER :: INT AS block_number,
     VALUE :BLOCK_HASH :: STRING AS block_hash,
-    DATA :result :nextblockhash :: STRING IS NULL as is_pending,
+    DATA :result :nextblockhash :: STRING IS NULL AS is_pending,
     partition_key,
     _inserted_timestamp,
     SYSDATE() AS inserted_timestamp,
@@ -30,6 +30,12 @@ WHERE
         FROM
             {{ this }}
     )
+    AND partition_key >= (
+        SELECT
+            MAX(partition_key) partition_key
+        FROM
+            {{ this }}
+    ) -1000 -- get the previous partition_key to be safe
 {% else %}
     {{ ref('bronze__streamline_FR_blocks_transactions') }}
 {% endif %}
