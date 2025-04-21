@@ -18,3 +18,4 @@ logs/
 .user.yml
 
 local*
+venv/

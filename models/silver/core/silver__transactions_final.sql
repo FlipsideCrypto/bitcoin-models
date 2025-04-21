@@ -24,6 +24,9 @@
                 {{ this }}
         ) {% endset %}
     {% set incremental_load_value = run_query(query) [0] [0] %}
+    {% if not incremental_load_value or incremental_load_value == 'None' %}
+        {% set incremental_load_value = (select min(_partition_by_block_id) from {{ this }}) %}
+    {% endif %}
 {% endif %}
 
 WITH inputs AS (
