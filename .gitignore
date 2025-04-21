@@ -19,3 +19,5 @@ logs/
 
 local*
 venv/
+.cursor/
+.cursorrules
