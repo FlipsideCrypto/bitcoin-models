@@ -17,7 +17,9 @@ SELECT
             'jsonrpc',
             '2.0',
             'method',
-            'getblockcount'
+            'getblockcount',
+            'id',
+            'Flipside/getChainhead/' || DATE_PART('EPOCH', SYSDATE()) :: INTEGER
         ),
         'Vault/prod/bitcoin/quicknode'
     ) :data :result ::INT AS block_number

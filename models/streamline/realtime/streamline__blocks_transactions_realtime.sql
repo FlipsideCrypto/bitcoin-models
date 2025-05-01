@@ -80,7 +80,9 @@ SELECT
             ARRAY_CONSTRUCT(
                 block_hash,
                 2
-            )
+            ),
+            'id',
+            'Flipside/getBlockTransactions/' || DATE_PART('EPOCH', SYSDATE()) :: INTEGER
         ),
         'Vault/prod/bitcoin/quicknode'
     ) AS request
