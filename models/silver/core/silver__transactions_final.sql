@@ -30,6 +30,8 @@
                 MIN(_partition_by_block_id) + 1 AS _partition_by_block_id
             FROM
                 {{ this }}
+            WHERE
+                modified_timestamp >= SYSDATE() - INTERVAL '1 day'
         {% endset %}
         {% set incremental_load_value = run_query(fallback_query) [0] [0] %}
     {% endif %}
