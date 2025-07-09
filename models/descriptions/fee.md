@@ -1,6 +1,7 @@
 {% docs fee %}
 
-The transaction fee.
-At the block level, this is the total sum of transaction fees paid by all transactions in the block.
+The transaction fee (FLOAT, BTC) paid by this transaction. Calculated as the difference between the sum of input values and the sum of output values. Expressed in BTC.
+
+Example: 0.00004567
 
 {% enddocs %}

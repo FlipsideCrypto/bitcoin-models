@@ -1,8 +1,9 @@
 {% docs tx_id %}
 
-The transaction id. Not this differs from the transaction id for witness transactions.
-When the tx is a segwit tx, the calculation of hash does not include the witness data, whereas the txid does.
+The transaction ID (STRING), a 64-character hexadecimal hash that uniquely identifies this transaction. Note: For SegWit transactions, the txid is calculated without including witness data, which can differ from the transaction hash (see tx_hash).
 
-(Read more)[https://bitcoin.stackexchange.com/questions/77699/whats-the-difference-between-txid-and-hash-getrawtransaction-bitcoind]
+Example: 4d3c2b1a0f9e8d7c6b5a4e3d2c1b0a9876543210fedcba9876543210fedcba98
+
+See: https://bitcoin.stackexchange.com/questions/77699/whats-the-difference-between-txid-and-hash-getrawtransaction-bitcoind
 
 {% enddocs %}

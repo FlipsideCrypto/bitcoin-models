@@ -1,5 +1,7 @@
 {% docs is_coinbase %}
 
-True if the transaction output belongs to a coinbase transaction, otherwise false.
+Boolean (TRUE/FALSE) indicating if this transaction is a coinbase transaction. Coinbase transactions are the first transaction in each block and are used to reward miners with newly minted Bitcoin and transaction fees.
+
+Example: TRUE
 
 {% enddocs %}

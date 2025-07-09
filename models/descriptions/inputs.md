@@ -1,5 +1,7 @@
 {% docs inputs %}
 
-An array of the transaction inputs. Each object in the array serves as a transaction's input vector (vin).
+An array of input objects (ARRAY<STRUCT>) for this transaction. Each object represents a transaction input (vin), including fields such as previous output reference, scriptSig, and sequence number.
+
+Example: [ {"txid": "...", "vout": 0, "scriptSig": { ... }, "sequence": 4294967295 }, ... ]
 
 {% enddocs %}
