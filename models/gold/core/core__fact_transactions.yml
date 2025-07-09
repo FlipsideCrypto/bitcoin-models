@@ -3,7 +3,24 @@ version: 2
 models:
   - name: core__fact_transactions
     description: |-
-      Final Bitcoin transactions model with value and coinbase information added from inputs and outputs.
+      Contains one row per Bitcoin transaction, representing the canonical record of all confirmed transactions on the Bitcoin blockchain. Each row aggregates parsed transaction data, including block context (block_timestamp, block_number, block_hash), transaction identifiers (tx_id, tx_hash), input and output details (arrays of input/output structs, input/output counts and values in BTC and Satoshis), fee, coinbase status, and raw hex data. The model is built from upstream silver-layer transaction, input, and output models, joining and enriching raw blockchain data with computed fields such as transaction fees, input/output value totals, and coinbase status. All values are standardized to Bitcoin conventions (BTC and Satoshis), and the model is updated as new blocks are confirmed.
+
+      **How to Use This Table:**
+      - Use this table as the primary source for transaction-level analytics on Bitcoin. Each row is a fully parsed, enriched transaction, ready for direct querying or joining with address/entity/label tables.
+      - For **basic transaction queries**, filter by block_timestamp or block_number for time-based analysis, or by tx_id/tx_hash for specific transactions.
+      - For **UTXO flow and tracing**, join INPUTS and OUTPUTS arrays to reconstruct the chain of spends, or use address clustering tables for entity-level analysis.
+      - For **fee market and blockspace studies**, aggregate FEE, SIZE, and VIRTUAL_SIZE by block or over time.
+      - For **address or entity analytics**, join on input/output addresses (from the nested structs) and use clustering/label tables to group by entity type (e.g., exchange, miner, mixer).
+      - For **forensic and investigative work**, leverage the full input/output structure to trace funds, detect mixing, or analyze transaction patterns. Use timeline analysis to detect bursts or coordinated activity.
+      - For **performance**, always filter by block_timestamp or block_number to limit query scope, and use partitioning/bucketing strategies for large-scale analytics.
+      - This table is foundational for downstream models, including entity clustering, address scoring, and cross-chain analytics. It is best practice to use this table as the starting point for any Bitcoin transaction analysis, and to join with dimension tables for enriched context.
+
+      **Best Practices:**
+      - Always filter by block_timestamp or block_number for large queries
+      - Use address clustering and label tables for entity-level insights
+      - Visualize transaction flows as graphs for pattern recognition
+      - Integrate with external data for enriched context
+      - Use timeline and chain-of-spends analysis for advanced investigations
     tests:
       - dbt_utils.recency:
           datepart: hour
