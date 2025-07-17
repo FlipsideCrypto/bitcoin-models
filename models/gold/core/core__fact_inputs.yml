@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_inputs
-    description: |-
-      Parsed output data from the `inputs` field in the transaction body, with spent tx output and block data appended.
+    description: "{{ doc('core__fact_inputs') }}"
     tests:
       - dbt_utils.recency:
           datepart: hour

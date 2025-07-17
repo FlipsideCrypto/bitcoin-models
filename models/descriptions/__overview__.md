@@ -1,90 +1,132 @@
 {% docs __overview__ %}
 
-# Welcome to the Flipside Crypto bitcoin Models Documentation
+# Bitcoin Models Documentation
 
-## **What does this documentation cover?**
-
-The documentation included here details the design of the bitcoin
-tables and views available via [Flipside Crypto.](https://flipsidecrypto.bitcoin/) For more information on how these models are built, please see [the github repository.](https://github.com/flipsideCrypto/bitcoin-models/)
-
-## **How do I use these docs?**
-
-The easiest way to navigate this documentation is to use the Quick Links below. These links will take you to the documentation for each table, which contains a description, a list of the columns, and other helpful information.
-
-If you are experienced with dbt docs, feel free to use the sidebar to navigate the documentation, as well as explore the relationships between tables and the logic building them.
-
-There is more information on how to use dbt docs in the last section of this document.
+This documentation covers the design and structure of the Bitcoin blockchain data models available through Flipside Crypto. These models provide comprehensive access to Bitcoin blockchain data, including blocks, transactions, inputs, outputs, and various analytical views.
 
 ## **Quick Links to Table Documentation**
 
 **Click on the links below to jump to the documentation for each schema.**
 
-### Core Tables (`bitcoin`.`CORE`.`<table_name>`)
+### CORE Tables
+
+**Dimension Tables:**
+- [core__dim_entity_clusters](#!/model/model.bitcoin_models.core__dim_entity_clusters)
+- [core__dim_labels](#!/model/model.bitcoin_models.core__dim_labels)
 
 **Fact Tables:**
+- [core__fact_blocks](#!/model/model.bitcoin_models.core__fact_blocks)
+- [core__fact_clustered_transfers](#!/model/model.bitcoin_models.core__fact_clustered_transfers)
+- [core__fact_inputs](#!/model/model.bitcoin_models.core__fact_inputs)
+- [core__fact_outputs](#!/model/model.bitcoin_models.core__fact_outputs)
+- [core__fact_transactions](#!/model/model.bitcoin_models.core__fact_transactions)
 
-- [fact_blocks](#!/model/model.bitcoin_models.core__fact_blocks)
-- [fact_transactions](#!/model/model.bitcoin_models.core__fact_transactions)
-- [fact_inputs](#!/model/model.bitcoin_models.core__fact_inputs)
-- [fact_outputs](#!/model/model.bitcoin_models.core__fact_outputs)
+### GOV Tables
 
-**Dimensional Tables:**
+**Easy Views:**
+- [gov__ez_miner_rewards](#!/model/model.bitcoin_models.gov__ez_miner_rewards)
 
-- [dim_entity_clusters](#!/model/model.bitcoin_models.core__dim_entity_clusters)
-- [dim_labels](#!/model/model.bitcoin_models.core__dim_labels)
+### PRICE Tables
 
-### Governance Schema
+**Dimension Tables:**
+- [price__dim_asset_metadata](#!/model/model.bitcoin_models.price__dim_asset_metadata)
 
-- [ez_miner_rewards](#!/model/model.bitcoin_models.gov__ez_miner_rewards)
+**Fact Tables:**
+- [price__fact_prices_ohlc_hourly](#!/model/model.bitcoin_models.price__fact_prices_ohlc_hourly)
 
-### Price Schema
+**Easy Views:**
+- [price__ez_asset_metadata](#!/model/model.bitcoin_models.price__ez_asset_metadata)
+- [price__ez_prices_hourly](#!/model/model.bitcoin_models.price__ez_prices_hourly)
 
-- [fact_hourly_token_prices](#!/model/model.bitcoin_models.price__fact_hourly_token_prices)
-- [ez_hourly_token_prices](#!/model/model.bitcoin_models.price__ez_hourly_token_prices)
+### STATS Tables
 
-**Stats EZ Tables:**
-
-- [ez_core_metrics_hourly](#!/model/model.bitcoin_models.ez_core_metrics_hourly)
+**Easy Views:**
+- [stats__ez_core_metrics_hourly](#!/model/model.bitcoin_models.stats__ez_core_metrics_hourly)
 
 ## **Data Model Overview**
 
-The bitcoin
-models are built a few different ways, but the core fact tables are built using three layers of sql models: **bronze, silver, and gold (or core).**
+The Bitcoin models follow a layered architecture with three main tiers:
 
-- Bronze: Data is loaded in from the source as a view
-- Silver: All necessary parsing, filtering, de-duping, and other transformations are done here
-- Gold (or core): Final views and tables that are available publicly
+- **Bronze Layer**: Raw data ingestion from blockchain sources
+- **Silver Layer**: Data cleaning, parsing, and transformation
+- **Gold Layer**: Final curated tables and views for analytics
 
-The dimension tables are sourced from a variety of on-chain and off-chain sources.
+The gold layer is organized into schemas based on domain:
+- **CORE**: Fundamental blockchain entities (blocks, transactions, inputs, outputs)
+- **GOV**: Governance and mining-related data
+- **PRICE**: Asset pricing and metadata
+- **STATS**: Aggregated metrics and statistics
 
-Convenience views (denoted ez\_) are a combination of different fact and dimension tables. These views are built to make it easier to query the data.
+Easy views (ez_*) combine multiple fact and dimension tables to simplify common analytical queries.
 
-## **Using dbt docs**
+<llm>
+<blockchain>Bitcoin</blockchain>
+<aliases>BTC, Bitcoin Core</aliases>
+<ecosystem>Layer 1, Proof of Work</ecosystem>
+<description>Bitcoin is the first and most widely adopted cryptocurrency, operating as a decentralized peer-to-peer electronic cash system. It uses a proof-of-work consensus mechanism where miners compete to solve cryptographic puzzles to validate transactions and create new blocks. Bitcoin's key features include its fixed supply cap of 21 million coins, transparent blockchain ledger, and resistance to censorship through decentralization. The network processes approximately 7 transactions per second and has a 10-minute average block time, making it suitable for store-of-value use cases and high-value transactions.</description>
+<external_resources>
+    <block_scanner>https://blockstream.info/</block_scanner>
+    <developer_documentation>https://developer.bitcoin.org/</developer_documentation>
+</external_resources>
+<expert>
+  <constraints>
+    <table_availability>
+      Ensure that your queries use only available tables for Bitcoin. The core schema contains fundamental blockchain data, while specialized schemas (gov, price, stats) provide domain-specific analytics.
+    </table_availability>
+    
+    <schema_structure>
+      Understand that dimensions and facts combine to make ez_ tables. Core tables contain the fundamental blockchain entities, while ez_ tables add business logic such as labels, USD price information, and aggregated metrics.
+    </schema_structure>
+  </constraints>
 
-### Navigation
+  <optimization>
+    <performance_filters>
+      Use filters like block_timestamp over the last N days to improve query speed. Bitcoin data can be large, so always include appropriate time-based filters.
+    </performance_filters>
+    
+    <query_structure>
+      Use CTEs, not subqueries, as readability is important. Bitcoin transaction data is complex with inputs and outputs, so clear query structure is essential.
+    </query_structure>
+    
+    <implementation_guidance>
+      Be smart with aggregations, window functions, and joins. Bitcoin's UTXO model means transactions can have multiple inputs and outputs, requiring careful handling of value calculations.
+    </implementation_guidance>
+  </optimization>
 
-You can use the `Project` and `Database` navigation tabs on the left side of the window to explore the models in the project.
+  <domain_mapping>
+    <token_operations>
+      For Bitcoin transfers, use core__fact_clustered_transfers table which handles the UTXO model complexity and provides clean transfer data.
+    </token_operations>
+    
+    <defi_analysis>
+      Bitcoin's DeFi ecosystem is primarily focused on Lightning Network and wrapped tokens. Use core__fact_transactions for on-chain activity and specialized tables for Lightning data if available.
+    </defi_analysis>
+    
+    <nft_analysis>
+      For Bitcoin NFT analysis (Ordinals, Inscriptions), use the ordinals-specific tables in the silver layer or specialized gold tables if available.
+    </nft_analysis>
+    
+    <specialized_features>
+      Bitcoin's UTXO model is complex, so ensure you understand how inputs and outputs relate to transfers. The clustered transfers table simplifies this for most use cases.
+    </specialized_features>
+  </domain_mapping>
 
-### Database Tab
+  <interaction_modes>
+    <direct_user>
+      Ask clarifying questions when dealing with complex Bitcoin data structures, especially around UTXOs, transaction fees, and mining rewards.
+    </direct_user>
+    
+    <agent_invocation>
+      When invoked by another AI agent, respond with relevant query text and explain Bitcoin-specific considerations like UTXO model and transaction structure.
+    </agent_invocation>
+  </interaction_modes>
 
-This view shows relations (tables and views) grouped into database schemas. Note that ephemeral models are _not_ shown in this interface, as they do not exist in the database.
-
-### Graph Exploration
-
-You can click the blue icon on the bottom-right corner of the page to view the lineage graph of your models.
-
-On model pages, you'll see the immediate parents and children of the model you're exploring. By clicking the Expand button at the top-right of this lineage pane, you'll be able to see all of the models that are used to build, or are built from, the model you're exploring.
-
-Once expanded, you'll be able to use the `--models` and `--exclude` model selection syntax to filter the models in the graph. For more information on model selection, check out the [dbt docs](https://docs.getdbt.com/docs/model-selection-syntax).
-
-Note that you can also right-click on models to interactively filter and explore the graph.
-
-### **More information**
-
-- [Flipside](https://flipsidecrypto.bitcoin/)
-- [Velocity](https://app.flipsidecrypto.com/velocity?nav=Discover)
-- [Tutorials](https://docs.flipsidecrypto.com/our-data/tutorials)
-- [Github](https://github.com/FlipsideCrypto/bitcoin-models)
-- [What is dbt?](https://docs.getdbt.com/docs/introduction)
+  <engagement>
+    <exploration_tone>
+      Have fun exploring the Bitcoin ecosystem through data! Bitcoin's transparent blockchain provides rich insights into economic activity, mining dynamics, and network usage patterns.
+    </exploration_tone>
+  </engagement>
+</expert>
+</llm>
 
 {% enddocs %}

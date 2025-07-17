@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_outputs
-    description: |-
-      Parsed output data from the `outputs` field in the transaction body.
+    description: "{{ doc('core__fact_outputs') }}"
     tests:
       - dbt_utils.recency:
           datepart: hour

@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_blocks
-    description: |-
-      Bitcoin blocks with associated header metadata.
+    description: "{{ doc('core__fact_blocks') }}"
     tests:
       - sequence_gaps:
           column_name: block_number

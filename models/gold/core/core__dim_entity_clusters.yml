@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: core__dim_entity_clusters
-    description: Common Spend Entity Clusters for BTC addresses
+    description: "{{ doc('core__dim_entity_clusters') }}"
 
     columns:
       - name: address

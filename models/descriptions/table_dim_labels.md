@@ -1,5 +1,31 @@
 {% docs table_dim_labels %}
 
-The labels table is a store of one-to-one address identifiers, or an address name. Labels are broken out into a "type" (such as cex, dex, dapp, games, etc.) and a "subtype" (ex: contract_deployer, hot_wallet, token_contract, etc.) in order to help classify each address name into similar groups. Our labels are sourced from many different places, but can primarily be grouped into two categories: automatic and manual. Automatic labels are continuously labeled based on certain criteria, such as a known contract deploying another contract, behavior based algorithms for finding deposit wallets, and consistent data pulls of custom protocol APIs. Manual labels are done periodically to find addresses that cannot be found programatically such as finding new protocol addresses, centralized exchange hot wallets, or trending addresses. Labels can also be added by our community by using our add-a-label tool (https://science.flipsidecrypto.xyz/add-a-label/) or on-chain with near (https://near.social/lord1.near/widget/Form) and are reviewed by our labels team. A label can be removed by our labels team if it is found to be incorrect or no longer relevant; this generally will only happen for mislabeled deposit wallets.
+## Description
+This table contains comprehensive address labels for Bitcoin addresses, providing categorized identification and classification of known entities, contracts, and addresses across the Bitcoin ecosystem. Each row represents a single address with its associated label information including type, subtype, project name, and creator details. The labels are sourced from both automatic algorithms and manual curation, enabling rich categorization of Bitcoin addresses for enhanced analytics and entity identification.
+
+## Key Use Cases
+- Address categorization and entity identification across the Bitcoin network
+- Exchange and service provider wallet identification and monitoring
+- Contract and protocol address tracking and analysis
+- Risk assessment and compliance monitoring for specific address types
+- Entity-based transaction filtering and analysis
+- Community-driven address labeling and verification
+- Cross-protocol address relationship mapping
+
+## Important Relationships
+- Primary dimension table for address categorization across the Bitcoin ecosystem
+- Referenced by `core__fact_transactions` for labeled transaction analysis
+- Used by `core__fact_inputs` and `core__fact_outputs` for labeled UTXO analysis
+- Supports `core__fact_clustered_transfers` for entity-level transfer categorization
+- Enables integration with `core__dim_entity_clusters` for enhanced entity analysis
+- Provides categorization context for `stats__ez_core_metrics_hourly` aggregated metrics
+
+## Commonly-used Fields
+- `address`: Essential for joining with transaction and UTXO tables
+- `label_type`: Core field for high-level address categorization
+- `label_subtype`: Important for detailed address classification
+- `project_name`: Key for protocol and service provider identification
+- `address_name`: Critical for human-readable address identification
+- Label fields enable rich categorization and filtering across all Bitcoin data
 
 {% enddocs %}
