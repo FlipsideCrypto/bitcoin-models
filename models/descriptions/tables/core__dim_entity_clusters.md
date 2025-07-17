@@ -14,11 +14,11 @@ This table contains address clustering information that groups related Bitcoin a
 
 ## Important Relationships
 - Primary dimension table for entity-level analytics across the Bitcoin ecosystem
-- Referenced by `core__fact_clustered_transfers` for entity-to-entity transfer analysis
-- Supports `core__fact_transactions` for entity-level transaction filtering
-- Used by `core__fact_inputs` and `core__fact_outputs` for entity-based UTXO analysis
-- Enables integration with `core__dim_labels` for categorized entity analysis
-- Provides entity context for `stats__ez_core_metrics_hourly` aggregated metrics
+- Referenced by `core.fact_clustered_transfers` for entity-to-entity transfer analysis
+- Supports `core.fact_transactions` for entity-level transaction filtering
+- Used by `core.fact_inputs` and `core.fact_outputs` for entity-based UTXO analysis
+- Enables integration with `core.dim_labels` for categorized entity analysis
+- Provides entity context for `stats.ez_core_metrics_hourly` aggregated metrics
 
 ## Commonly-used Fields
 - `address`: Essential for joining with transaction and UTXO tables

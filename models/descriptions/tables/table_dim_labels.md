@@ -14,11 +14,11 @@ This table contains comprehensive address labels for Bitcoin addresses, providin
 
 ## Important Relationships
 - Primary dimension table for address categorization across the Bitcoin ecosystem
-- Referenced by `core__fact_transactions` for labeled transaction analysis
-- Used by `core__fact_inputs` and `core__fact_outputs` for labeled UTXO analysis
-- Supports `core__fact_clustered_transfers` for entity-level transfer categorization
-- Enables integration with `core__dim_entity_clusters` for enhanced entity analysis
-- Provides categorization context for `stats__ez_core_metrics_hourly` aggregated metrics
+- Referenced by `core.fact_transactions` for labeled transaction analysis
+- Used by `core.fact_inputs` and `core.fact_outputs` for labeled UTXO analysis
+- Supports `core.fact_clustered_transfers` for entity-level transfer categorization
+- Enables integration with `core.dim_entity_clusters` for enhanced entity analysis
+- Provides categorization context for `stats.ez_core_metrics_hourly` aggregated metrics
 
 ## Commonly-used Fields
 - `address`: Essential for joining with transaction and UTXO tables

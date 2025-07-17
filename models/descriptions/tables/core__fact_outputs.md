@@ -14,11 +14,11 @@ This table contains detailed information about all transaction outputs in the Bi
 
 ## Important Relationships
 - Primary source for output-level analytics in the Bitcoin ecosystem
-- Referenced by `core__fact_transactions` to provide output details for transaction analysis
-- Links to `core__fact_inputs` when outputs are spent in future transactions
-- Supports `core__fact_clustered_transfers` for entity-level transfer tracking
-- Used by `core__dim_entity_clusters` for address clustering and entity identification
-- Enables integration with `core__dim_labels` for categorized output analysis
+- Referenced by `core.fact_transactions` to provide output details for transaction analysis
+- Links to `core.fact_inputs` when outputs are spent in future transactions
+- Supports `core.fact_clustered_transfers` for entity-level transfer tracking
+- Used by `core.dim_entity_clusters` for address clustering and entity identification
+- Enables integration with `core.dim_labels` for categorized output analysis
 
 ## Commonly-used Fields
 - `block_timestamp`: Essential for time-series analysis and trend detection

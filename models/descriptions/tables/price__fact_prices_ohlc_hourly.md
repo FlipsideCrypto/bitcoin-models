@@ -14,11 +14,11 @@ This table contains comprehensive hourly OHLC (Open, High, Low, Close) price dat
 
 ## Important Relationships
 - Primary fact table for hourly price data in the price ecosystem
-- Referenced by `price__dim_asset_metadata` for asset identification
-- Supports `price__ez_prices_hourly` for curated price analysis
-- Used by `price__ez_asset_metadata` for asset-specific price context
-- Enables integration with `core__fact_transactions` for price-impact analysis
-- Provides price context for `stats__ez_core_metrics_hourly` aggregated metrics
+- Referenced by `price.dim_asset_metadata` for asset identification
+- Supports `price.ez_prices_hourly` for curated price analysis
+- Used by `price.ez_asset_metadata` for asset-specific price context
+- Enables integration with `core.fact_transactions` for price-impact analysis
+- Provides price context for `stats.ez_core_metrics_hourly` aggregated metrics
 
 ## Commonly-used Fields
 - `hour`: Essential for time-series analysis and chronological ordering

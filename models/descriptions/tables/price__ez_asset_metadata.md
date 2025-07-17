@@ -13,11 +13,11 @@ This table contains curated and prioritized asset metadata for Bitcoin and other
 - Curated asset information for reporting and dashboards
 
 ## Important Relationships
-- Curated view of `price__dim_asset_metadata` with provider prioritization
-- Referenced by `price__ez_prices_hourly` for asset-specific price analysis
-- Supports `core__fact_transactions` for asset-specific transaction analysis
-- Used by `core__fact_clustered_transfers` for asset-based transfer categorization
-- Enables integration with `stats__ez_core_metrics_hourly` for asset-specific metrics
+- Curated view of `price.dim_asset_metadata` with provider prioritization
+- Referenced by `price.ez_prices_hourly` for asset-specific price analysis
+- Supports `core.fact_transactions` for asset-specific transaction analysis
+- Used by `core.fact_clustered_transfers` for asset-based transfer categorization
+- Enables integration with `stats.ez_core_metrics_hourly` for asset-specific metrics
 - Provides curated asset context for all price-related analytics
 
 ## Commonly-used Fields

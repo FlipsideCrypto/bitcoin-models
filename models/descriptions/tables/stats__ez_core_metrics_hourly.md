@@ -13,10 +13,10 @@ This table contains hourly aggregated metrics for the Bitcoin blockchain, provid
 - Comparative analysis across different time periods
 
 ## Important Relationships
-- Aggregates data from `core__fact_blocks` and `core__fact_transactions`
-- Utilizes `price__ez_prices_hourly` for USD fee calculations
-- Supports `core__fact_clustered_transfers` for entity-level metrics
-- Enables integration with `gov__ez_miner_rewards` for mining economics
+- Aggregates data from `core.fact_blocks` and `core.fact_transactions`
+- Utilizes `price.ez_prices_hourly` for USD fee calculations
+- Supports `core.fact_clustered_transfers` for entity-level metrics
+- Enables integration with `gov.ez_miner_rewards` for mining economics
 - Provides aggregated context for all other Bitcoin analytics
 - Serves as the primary source for network-level reporting
 

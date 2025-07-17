@@ -14,11 +14,11 @@ This table contains the canonical record of all confirmed Bitcoin transactions, 
 
 ## Important Relationships
 - Primary source for all transaction-level analytics in the Bitcoin ecosystem
-- Referenced by `core__fact_inputs` and `core__fact_outputs` for detailed UTXO analysis
-- Supports `core__fact_clustered_transfers` for entity-level transfer tracking
-- Used by `core__dim_entity_clusters` for address clustering and entity identification
-- Provides transaction data for `stats__ez_core_metrics_hourly` aggregated metrics
-- Enables integration with `core__dim_labels` for categorized transaction analysis
+- Referenced by `core.fact_inputs` and `core.fact_outputs` for detailed UTXO analysis
+- Supports `core.fact_clustered_transfers` for entity-level transfer tracking
+- Used by `core.dim_entity_clusters` for address clustering and entity identification
+- Provides transaction data for `stats.ez_core_metrics_hourly` aggregated metrics
+- Enables integration with `core.dim_labels` for categorized transaction analysis
 
 ## Commonly-used Fields
 - `block_timestamp`: Essential for time-series analysis and trend detection

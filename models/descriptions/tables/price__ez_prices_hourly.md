@@ -13,11 +13,11 @@ This table contains curated hourly price data for Bitcoin and other assets, prov
 - Price-based filtering and analysis of blockchain activity
 
 ## Important Relationships
-- Curated view of `price__fact_prices_ohlc_hourly` with provider prioritization
-- Referenced by `price__ez_asset_metadata` for asset-specific context
-- Supports `core__fact_transactions` for price-impact analysis
-- Used by `core__fact_clustered_transfers` for value-based transfer analysis
-- Enables integration with `stats__ez_core_metrics_hourly` for price-based metrics
+- Curated view of `price.fact_prices_ohlc_hourly` with provider prioritization
+- Referenced by `price.ez_asset_metadata` for asset-specific context
+- Supports `core.fact_transactions` for price-impact analysis
+- Used by `core.fact_clustered_transfers` for value-based transfer analysis
+- Enables integration with `stats.ez_core_metrics_hourly` for price-based metrics
 - Provides curated price context for all market-related analytics
 
 ## Commonly-used Fields

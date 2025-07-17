@@ -14,11 +14,11 @@ This table contains comprehensive asset metadata for Bitcoin and other assets fr
 
 ## Important Relationships
 - Primary dimension table for asset identification in the price ecosystem
-- Referenced by `price__fact_prices_ohlc_hourly` for asset-specific price data
-- Supports `price__ez_asset_metadata` for curated asset information
-- Used by `price__ez_prices_hourly` for simplified price analysis
-- Enables integration with `core__fact_transactions` for asset-specific transaction analysis
-- Provides asset context for `stats__ez_core_metrics_hourly` aggregated metrics
+- Referenced by `price.fact_prices_ohlc_hourly` for asset-specific price data
+- Supports `price.ez_asset_metadata` for curated asset information
+- Used by `price.ez_prices_hourly` for simplified price analysis
+- Enables integration with `core.fact_transactions` for asset-specific transaction analysis
+- Provides asset context for `stats.ez_core_metrics_hourly` aggregated metrics
 
 ## Commonly-used Fields
 - `asset_id`: Essential for unique asset identification across providers

@@ -13,11 +13,11 @@ This table contains comprehensive mining reward data for all Bitcoin blocks, pro
 - Fee market dynamics and transaction prioritization studies
 
 ## Important Relationships
-- Aggregates mining reward data from `core__fact_blocks` and `core__fact_transactions`
-- Provides mining economics context for `core__fact_clustered_transfers` entity analysis
-- Supports `stats__ez_core_metrics_hourly` for aggregated mining metrics
-- Enables integration with `core__dim_entity_clusters` for mining pool analysis
-- Complements `price__ez_prices_hourly` for mining profitability analysis
+- Aggregates mining reward data from `core.fact_blocks` and `core.fact_transactions`
+- Provides mining economics context for `core.fact_clustered_transfers` entity analysis
+- Supports `stats.ez_core_metrics_hourly` for aggregated mining metrics
+- Enables integration with `core.dim_entity_clusters` for mining pool analysis
+- Complements `price.ez_prices_hourly` for mining profitability analysis
 
 ## Commonly-used Fields
 - `block_timestamp`: Essential for time-series analysis and trend detection

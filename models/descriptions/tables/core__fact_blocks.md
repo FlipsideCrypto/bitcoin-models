@@ -14,10 +14,10 @@ This table contains the complete block header data for all Bitcoin blocks, provi
 
 ## Important Relationships
 - Primary source for all block-level analytics in the Bitcoin ecosystem
-- Referenced by `core__fact_transactions` to provide block context for transaction analysis
-- Used by `core__fact_inputs` and `core__fact_outputs` to establish block-level relationships
-- Supports `gov__ez_miner_rewards` for mining reward calculations and analysis
-- Provides foundational data for `stats__ez_core_metrics_hourly` aggregated metrics
+- Referenced by `core.fact_transactions` to provide block context for transaction analysis
+- Used by `core.fact_inputs` and `core.fact_outputs` to establish block-level relationships
+- Supports `gov.ez_miner_rewards` for mining reward calculations and analysis
+- Provides foundational data for `stats.ez_core_metrics_hourly` aggregated metrics
 
 ## Commonly-used Fields
 - `block_timestamp`: Essential for time-series analysis and trend detection

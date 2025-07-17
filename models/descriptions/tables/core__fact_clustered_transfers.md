@@ -13,12 +13,12 @@ This table contains Bitcoin transfers between clustered entities, providing a si
 - Simplified transaction graph analysis for high-level insights
 
 ## Important Relationships
-- Provides entity-level aggregation of `core__fact_transactions` data
-- Utilizes `core__dim_entity_clusters` for address-to-entity mapping
-- Supports `core__dim_labels` for entity categorization and labeling
-- Enables integration with `stats__ez_core_metrics_hourly` for aggregated metrics
-- Complements `gov__ez_miner_rewards` for mining-related entity analysis
-- Provides simplified view for `price__ez_prices_hourly` market analysis
+- Provides entity-level aggregation of `core.fact_transactions` data
+- Utilizes `core.dim_entity_clusters` for address-to-entity mapping
+- Supports `core.dim_labels` for entity categorization and labeling
+- Enables integration with `stats.ez_core_metrics_hourly` for aggregated metrics
+- Complements `gov.ez_miner_rewards` for mining-related entity analysis
+- Provides simplified view for `price.ez_prices_hourly` market analysis
 
 ## Commonly-used Fields
 - `block_timestamp`: Essential for time-series analysis and trend detection
