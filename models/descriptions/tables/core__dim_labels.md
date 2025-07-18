@@ -1,4 +1,4 @@
-{% docs table_dim_labels %}
+{% docs core__dim_labels %}
 
 ## Description
 This table contains comprehensive address labels for Bitcoin addresses, providing categorized identification and classification of known entities, contracts, and addresses across the Bitcoin ecosystem. Each row represents a single address with its associated label information including type, subtype, project name, and creator details. The labels are sourced from both automatic algorithms and manual curation, enabling rich categorization of Bitcoin addresses for enhanced analytics and entity identification.

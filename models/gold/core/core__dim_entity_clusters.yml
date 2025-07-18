@@ -5,14 +5,14 @@ models:
     description: "{{ doc('core__dim_entity_clusters') }}"
 
     columns:
-      - name: address
-        description: Address that the label is for. This is the field that should be used to join other tables with labels. 
+      - name: ADDRESS
+        description: "{{ doc('address') }}"
         tests:
           - unique
           - not_null
-      - name: address_group
-        description: An arbitrary group number that identifies addresses within the same group. Group number can change, avoid referencing a specific group number.  
+      - name: ADDRESS_GROUP
+        description: "{{ doc('address_group') }}"
         tests:
           - not_null
-      - name: project_name
-        description: A label for each group. Only available if an address within a group is labeled. 
+      - name: PROJECT_NAME
+        description: "{{ doc('project_name') }}" 
