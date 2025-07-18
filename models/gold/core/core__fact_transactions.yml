@@ -2,8 +2,7 @@ version: 2
 
 models:
   - name: core__fact_transactions
-    description: |-
-      Final Bitcoin transactions model with value and coinbase information added from inputs and outputs.
+    description: "{{ doc('core__fact_transactions') }}"
     tests:
       - dbt_utils.recency:
           datepart: hour
